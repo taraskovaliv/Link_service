@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  api:
+    container_name: linkService
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7071:7071"
+    env_file:
+      - link_server.env
+    extra_hosts:
+      - "server.local:192.168.1.3"
