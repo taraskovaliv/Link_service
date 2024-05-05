@@ -11,5 +11,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("dev.kovaliv.data")
 @Import(OrmConfig.class)
 public class RepositoryConfig {
-
 }

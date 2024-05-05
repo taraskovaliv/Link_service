@@ -4,7 +4,6 @@ import dev.kovaliv.data.entity.Link;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import io.javalin.http.staticfiles.Location;
 import lombok.extern.log4j.Log4j2;
 
 import java.net.URLDecoder;
@@ -17,21 +16,42 @@ import java.util.Objects;
 import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.view.BasicPages.getError;
 import static dev.kovaliv.view.BasicPages.getSuccess;
+import static dev.kovaliv.view.Pages.getAuth;
 import static dev.kovaliv.view.Pages.getIndex;
 import static io.javalin.http.HttpStatus.BAD_REQUEST;
 import static io.javalin.http.HttpStatus.NOT_FOUND;
+import static java.lang.System.getenv;
 
 @Log4j2
 public class App {
     public static Javalin app() {
-        return Javalin.create(conf -> conf.staticFiles.add("/static", Location.CLASSPATH))
+        return Javalin.create()
                 .get("/", App::home)
                 .post("/add", App::add)
+                .post("/auth", App::auth)
                 .get("/{id}", App::redirectById);
     }
 
     private static void home(Context ctx) {
-        ctx.html(getIndex().render());
+        String key = ctx.queryParam("key");
+        if (key != null && key.equals(getenv("MODERATION_KEY"))) {
+            ctx.sessionAttribute("auth", key);
+            ctx.redirect("/");
+            return;
+        }
+        String auth = ctx.sessionAttribute("auth");
+        if (auth != null && auth.equals(getenv("MODERATION_KEY"))) {
+            ctx.html(getIndex().render());
+            return;
+        }
+        ctx.html(getAuth().render());
+    }
+
+    private static void auth(Context ctx) {
+        String body = decode(ctx.body());
+        Map<String, String> params = parseParams(body);
+        ctx.sessionAttribute("auth", params.get("key"));
+        ctx.redirect("/");
     }
 
     private static void redirectById(Context ctx) {
@@ -123,7 +143,7 @@ public class App {
         Arrays.stream(body.split("&")).forEach(param -> {
             String[] keyValue = param.split("=");
             if (keyValue.length == 2) {
-                result.put(keyValue[0], keyValue[1]);
+                result.put(keyValue[0].toLowerCase(), keyValue[1]);
             }
         });
         return result;

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface LinkRepo extends JpaRepository<Link, Long>{
+public interface LinkRepo extends JpaRepository<Link, Long> {
     Optional<Link> findByName(String name);
 }

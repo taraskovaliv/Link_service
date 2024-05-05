@@ -1,5 +1,6 @@
 package dev.kovaliv.view;
 
+import j2html.tags.Tag;
 import j2html.tags.specialized.DivTag;
 import j2html.tags.specialized.HtmlTag;
 
@@ -11,6 +12,34 @@ public class Pages {
 
     public static HtmlTag getIndex() {
         return getPage("Лінк сервіс kovaliv.dev", getHomeContent());
+    }
+
+    public static HtmlTag getAuth() {
+        return getPage("Авторизація", getAuthContent());
+    }
+
+    private static Tag getAuthContent() {
+        return div(
+                h1("Авторизація"),
+                form(
+                        label().attr("for", "key"),
+                        input()
+                                .withId("key")
+                                .withType("text")
+                                .withName("key")
+                                .attr("required")
+                                .withPlaceholder("Ваш ключ доступу"),
+                        br(),
+                        button("Увійти")
+                                .withClasses("btn-primary")
+                ).withClasses("text-center")
+                        .withMethod("post")
+                        .withAction("/auth")
+                        .withStyle("margin-top: 15px")
+        )
+                .withId("remove-user")
+                .withClasses("content", "text-center")
+                .withStyle("flex-direction: column; margin-top: 3%");
     }
 
     private static DivTag getHomeContent() {
