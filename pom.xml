@@ -24,6 +24,7 @@
         <slf4j-simple.version>2.0.10</slf4j-simple.version>
         <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <uap-java.version>1.6.1</uap-java.version>
     </properties>
 
     <dependencies>
@@ -82,6 +83,11 @@
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ua-parser</groupId>
+            <artifactId>uap-java</artifactId>
+            <version>${uap-java.version}</version>
         </dependency>
     </dependencies>
     <build>

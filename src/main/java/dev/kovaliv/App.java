@@ -1,6 +1,7 @@
 package dev.kovaliv;
 
 import dev.kovaliv.data.entity.Link;
+import dev.kovaliv.tasks.SaveVisit;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -64,11 +65,13 @@ public class App {
                 error(ctx);
                 return;
         }
-        linkRepo().findByName(id).ifPresent(link -> {
-            ctx.redirect(link.getUrl());
-            new Thread(() -> incrementRedirects(link)).start();
-        });
-        error(ctx, NOT_FOUND, "Помилка", "Посилання не знайдено");
+        linkRepo().findByName(id).ifPresentOrElse(
+                link -> {
+                    ctx.redirect(link.getUrl());
+                    new SaveVisit(link, ctx.ip(), new HashMap<>(ctx.headerMap())).start();
+                },
+                () -> error(ctx, NOT_FOUND, "Помилка", "Посилання не знайдено")
+        );
     }
 
     private static void add(Context ctx) {
@@ -147,14 +150,5 @@ public class App {
             }
         });
         return result;
-    }
-
-    private static void incrementRedirects(Link link) {
-        synchronized (String.valueOf(link.getId())) {
-            linkRepo().findById(link.getId()).ifPresent(l -> {
-                link.setCountVisits(link.getCountVisits() + 1);
-                linkRepo().save(link);
-            });
-        }
     }
 }

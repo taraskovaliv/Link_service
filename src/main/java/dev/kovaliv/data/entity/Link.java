@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
@@ -35,8 +36,8 @@ public class Link {
     @Column(name = "description", length = 3000)
     private String description;
 
-    @Column(name = "count_visits", columnDefinition = "BIGINT DEFAULT 0")
-    private long countVisits;
+    @OneToMany(mappedBy = "link", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Visit> visits;
 
     @CreationTimestamp
     @Column(updatable = false, columnDefinition = "TIMESTAMP")
