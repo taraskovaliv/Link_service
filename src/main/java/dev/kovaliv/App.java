@@ -17,8 +17,7 @@ import java.util.Objects;
 import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.view.BasicPages.getError;
 import static dev.kovaliv.view.BasicPages.getSuccess;
-import static dev.kovaliv.view.Pages.getAuth;
-import static dev.kovaliv.view.Pages.getIndex;
+import static dev.kovaliv.view.Pages.*;
 import static io.javalin.http.HttpStatus.BAD_REQUEST;
 import static io.javalin.http.HttpStatus.NOT_FOUND;
 import static java.lang.System.getenv;
@@ -30,29 +29,55 @@ public class App {
                 .get("/", App::home)
                 .post("/add", App::add)
                 .post("/auth", App::auth)
+                .post("/statistic", App::statisticOpen)
+                .get("/statistic/{email}", App::statisticByEmail)
                 .get("/{id}", App::redirectById);
     }
 
+    private static void statisticByEmail(Context context) {
+        String email = context.pathParam("email");
+        if (isAuthenticated(context)) {
+            context.html(getStatisticByEmail(email).render());
+        }
+    }
+
+    private static void statisticOpen(Context context) {
+        String email = context.formParam("email");
+        context.redirect("/statistic/" + email);
+    }
+
     private static void home(Context ctx) {
+        if (isAuthenticated(ctx)) {
+            ctx.html(getIndex().render());
+        }
+    }
+
+    private static boolean isAuthenticated(Context ctx) {
         String key = ctx.queryParam("key");
         if (key != null && key.equals(getenv("MODERATION_KEY"))) {
             ctx.sessionAttribute("auth", key);
-            ctx.redirect("/");
-            return;
+            ctx.redirect(ctx.path());
+            return false;
         }
         String auth = ctx.sessionAttribute("auth");
         if (auth != null && auth.equals(getenv("MODERATION_KEY"))) {
-            ctx.html(getIndex().render());
-            return;
+            return true;
         }
+        ctx.status(401);
+        ctx.sessionAttribute("redirect_after_auth", ctx.path());
         ctx.html(getAuth().render());
+        return false;
     }
 
     private static void auth(Context ctx) {
         String body = decode(ctx.body());
         Map<String, String> params = parseParams(body);
         ctx.sessionAttribute("auth", params.get("key"));
-        ctx.redirect("/");
+        String redirectPath = ctx.sessionAttribute("redirect_after_auth");
+        if (redirectPath == null || redirectPath.isBlank()) {
+            redirectPath = "/";
+        }
+        ctx.redirect(redirectPath);
     }
 
     private static void redirectById(Context ctx) {
@@ -63,6 +88,11 @@ public class App {
                 return;
             case "error":
                 error(ctx);
+                return;
+            case "statistic":
+                if (isAuthenticated(ctx)) {
+                    ctx.html(getStatistic().render());
+                }
                 return;
         }
         linkRepo().findByName(id).ifPresentOrElse(
