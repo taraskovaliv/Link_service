@@ -7,6 +7,7 @@ import j2html.tags.specialized.DivTag;
 import j2html.tags.specialized.HeadTag;
 import j2html.tags.specialized.HtmlTag;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,8 +16,8 @@ import static java.lang.System.getenv;
 
 public class Base {
 
-    public static HeadTag getHead(String title) {
-        return head(
+    public static HeadTag getHead(String title, List<Tag> additionalTags) {
+        List<Tag> tags = new ArrayList<>(List.of(
                 meta().withCharset("UTF-8"),
                 meta().withName("viewport").withContent("width=device-width, initial-scale=1.0"),
                 link().withRel("stylesheet").withHref("https://kovaliv.dev/css/main.css?1.6"),
@@ -24,9 +25,12 @@ public class Base {
                 link().withRel("preconnect").withHref("https://fonts.macpaw.com").attr("crossorigin"),
                 link().withRel("stylesheet").withHref("https://fonts.macpaw.com/css?family=FixelDisplay:300"),
                 link().withRel("icon").withType("image/x-icon").withHref("https://kovaliv.dev/img/favicon.ico"),
-                //TODO add icon
                 title(title)
-        );
+        ));
+        if (additionalTags != null && !additionalTags.isEmpty()) {
+            tags.addAll(additionalTags);
+        }
+        return head(tags.toArray(Tag[]::new));
     }
 
     public static DivTag getNavBar() {
@@ -45,12 +49,20 @@ public class Base {
     }
 
     public static HtmlTag getPage(String title, List<Tag> contents) {
-        return getPage(title, contents.toArray(new Tag[0]));
+        return getPage(title, new ArrayList<>(), contents.toArray(Tag[]::new));
+    }
+
+    public static HtmlTag getPage(String title, List<Tag> contents, List<Tag> additionalTags) {
+        return getPage(title, additionalTags, contents.toArray(Tag[]::new));
     }
 
     public static HtmlTag getPage(String title, Tag... contents) {
+        return getPage(title, new ArrayList<>(), contents);
+    }
+
+    public static HtmlTag getPage(String title, List<Tag> additionalTags, Tag... contents) {
         return html(
-                getHead(title),
+                getHead(title, additionalTags),
                 body(
                         getNavBar(),
                         hr(),

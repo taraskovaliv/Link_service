@@ -4,12 +4,19 @@ import dev.kovaliv.data.dto.StatisticDto;
 import j2html.tags.specialized.DivTag;
 import j2html.tags.specialized.HtmlTag;
 import j2html.tags.specialized.PTag;
+import software.xdev.chartjs.model.charts.BarChart;
+import software.xdev.chartjs.model.color.Color;
+import software.xdev.chartjs.model.data.BarData;
+import software.xdev.chartjs.model.dataset.BarDataset;
+import software.xdev.chartjs.model.options.BarOptions;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.view.Base.getPage;
 import static j2html.TagCreator.*;
+import static software.xdev.chartjs.model.options.BarOptions.IndexAxis.Y;
 
 public class Pages {
 
@@ -32,16 +39,43 @@ public class Pages {
 
     private static DivTag getStatisticContentByEmail(String email) {
         List<StatisticDto> statisticByEmail = linkRepo().getStatisticByEmail(email);
+
         return div(
                 h1("Статистика для " + email),
                 div(
-                        statisticByEmail.stream()
-                                .map(Pages::getStatisticP)
-                                .toArray(PTag[]::new)
+                        div(
+                                canvas().withId("barChart")
+                        ),
+                        script().withSrc("https://cdn.jsdelivr.net/npm/chart.js"),
+                        script(String.format("""
+                                const ctx = document.getElementById('barChart');
+                                new Chart(document.getElementById('barChart').getContext('2d'), %s);
+                                """, getBarChart(statisticByEmail).toJson()))
                 ).withClass("home-content")
         )
                 .withClasses("content", "text-center")
                 .withStyle("flex-direction: column; margin-top: 3%");
+    }
+
+    private static BarChart getBarChart(List<StatisticDto> statisticByEmail) {
+        BarDataset dataset = new BarDataset()
+                .setLabel("Перегляди")
+                .setData(statisticByEmail.stream()
+                        .map(StatisticDto::getCount)
+                        .map(BigDecimal::valueOf)
+                        .toList())
+                .setBorderWidth(2);
+        dataset.addBackgroundColor(new Color(144, 238, 144));
+        dataset.addBorderColor(Color.DARK_GREEN);
+
+        BarData data = new BarData()
+                .addLabels(statisticByEmail.stream().map(StatisticDto::getName).toArray(String[]::new))
+                .addDataset(dataset);
+
+        BarChart barChart = new BarChart()
+                .setData(data)
+                .setOptions(new BarOptions().setIndexAxis(Y));
+        return barChart;
     }
 
     private static PTag getStatisticP(StatisticDto s) {
