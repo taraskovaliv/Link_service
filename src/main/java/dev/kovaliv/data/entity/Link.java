@@ -24,16 +24,16 @@ public class Link {
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "name", updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false, unique = true)
     private String name;
 
     @Column(name = "responsible_email", updatable = false, nullable = false)
     private String responsibleEmail;
 
-    @Column(name = "url", updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false)
     private String url;
 
-    @Column(name = "description", length = 3000)
+    @Column(length = 3000)
     private String description;
 
     @OneToMany(mappedBy = "link", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})

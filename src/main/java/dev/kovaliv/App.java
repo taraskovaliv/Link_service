@@ -31,6 +31,7 @@ public class App {
                 .post("/auth", App::auth)
                 .post("/statistic", App::statisticOpen)
                 .get("/statistic/{email}", App::statisticByEmail)
+                .get("/statistic/{email}/{name}", App::statisticByEmailAndName)
                 .get("/{id}", App::redirectById);
     }
 
@@ -38,6 +39,14 @@ public class App {
         String email = context.pathParam("email");
         if (isAuthenticated(context)) {
             context.html(getStatisticByEmail(email).render());
+        }
+    }
+
+    private static void statisticByEmailAndName(Context context) {
+        String email = context.pathParam("email");
+        String name = context.pathParam("name");
+        if (isAuthenticated(context)) {
+            context.html(getStatisticByEmailAndName(email, name).render());
         }
     }
 
@@ -109,7 +118,7 @@ public class App {
         log.debug("Add link");
         String body = decode(ctx.body());
         Map<String, String> params = parseParams(body);
-        linkRepo().findByName("name").ifPresentOrElse(
+        linkRepo().findByName(params.get("name")).ifPresentOrElse(
                 link -> error(ctx, "Помилка", "Посилання з такою назвою вже існує"),
                 () -> {
                     //TODO add validations
@@ -119,10 +128,9 @@ public class App {
                             .responsibleEmail(params.get("email"))
                             .description(params.get("description"))
                             .build());
+                    success(ctx, "Успішно додано", "Посилання успішно додано: " + getenv("HOST") + "/" + params.get("name"));
                 }
         );
-        //TODO add "copy link to clipboard" button to response
-        success(ctx, "Успішно додано", "Посилання успішно додано");
     }
 
 
