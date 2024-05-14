@@ -36,6 +36,10 @@ public class Visit {
 
     private String language;
 
+    private String campaign;
+
+    private String source;
+
     private boolean mobile;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -5,6 +5,8 @@ import dev.kovaliv.data.entity.Link;
 import dev.kovaliv.data.entity.Visit;
 import ua_parser.Parser;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class SaveVisit extends Thread {
     private static final String SEC_CH_UA_PLATFORM = "sec-ch-ua-platform";
     private static final String SEC_CH_UA_MOBILE = "sec-ch-ua-mobile";
 
+    private static final String REFERER = "referer";
     private static final String USER_AGENT = "user-agent";
     private static final String ACCEPT_LANGUAGE = "accept-language";
     private static final String X_FORWARDED_FOR = "x-forwarded-for";
@@ -27,13 +30,15 @@ public class SaveVisit extends Thread {
     private final Link link;
     private final String ip;
     private final HashMap<String, String> headersMap;
+    private final HashMap<String, List<String>> queryParams;
 
-    public SaveVisit(Link link, String ip, HashMap<String, String> headersMap) {
+    public SaveVisit(Link link, String ip, HashMap<String, String> headersMap, HashMap<String, List<String>> queryParams) {
         super();
         this.link = link;
         toLowerCaseKeys(headersMap);
         this.ip = getIp(ip, headersMap);
         this.headersMap = headersMap;
+        this.queryParams = queryParams;
     }
 
     private void toLowerCaseKeys(HashMap<String, String> headersMap) {
@@ -56,6 +61,8 @@ public class SaveVisit extends Thread {
                     .country(getCountry(headersMap))
                     .mobile(isMobile(headersMap))
                     .language(getLanguage(headersMap))
+                    .campaign(getCampaign(queryParams))
+                    .source(getReferer(headersMap))
                     .link(l)
                     .build();
             List<Header> headers = headersMap.entrySet().stream()
@@ -68,6 +75,54 @@ public class SaveVisit extends Thread {
             visit.setHeaders(headers);
             visitRepo().save(visit);
         });
+    }
+
+    private static String getReferer(HashMap<String, String> headersMap) {
+        String source = "";
+        if (headersMap.containsKey(REFERER)) {
+            try {
+                source = headersMap.get(REFERER);
+                URI uri = new URI(source);
+                source = uri.getHost();
+                if (source.startsWith("www.")) {
+                    source = source.substring(4);
+                }
+                source = replaceIfPredefinedName(source);
+            } catch (URISyntaxException e) {
+                return "";
+            }
+            headersMap.remove(REFERER);
+        }
+        return source;
+    }
+
+    private static String replaceIfPredefinedName(String source) {
+        return switch (source) {
+            case "google.com" -> "Google";
+            case "bing.com" -> "Bing";
+            case "yahoo.com" -> "Yahoo";
+            case "t.co", "x.com", "twitter.com" -> "Twitter";
+            case "facebook.com" -> "Facebook";
+            case "instagram.com" -> "Instagram";
+            case "linkedin.com" -> "LinkedIn";
+            case "pinterest.com" -> "Pinterest";
+            case "reddit.com" -> "Reddit";
+            case "tumblr.com" -> "Tumblr";
+            default -> source;
+        };
+    }
+
+    private static String getCampaign(HashMap<String, List<String>> queryParams) {
+        if (queryParams == null || queryParams.isEmpty()) {
+            return "";
+        }
+        if (queryParams.containsKey("utm_campaign")) {
+            return queryParams.get("utm_campaign").getFirst();
+        }
+        if (queryParams.containsKey("campaign")) {
+            return queryParams.get("campaign").getFirst();
+        }
+        return "";
     }
 
     private static String getLanguage(HashMap<String, String> headersMap) {

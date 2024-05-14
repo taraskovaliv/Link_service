@@ -98,7 +98,8 @@ public class App {
         linkRepo().findByName(id).ifPresentOrElse(
                 link -> {
                     ctx.redirect(link.getUrl());
-                    new SaveVisit(link, ctx.ip(), new HashMap<>(ctx.headerMap())).start();
+                    new SaveVisit(link, ctx.ip(), new HashMap<>(ctx.headerMap()), new HashMap<>(ctx.queryParamMap()))
+                            .start();
                 },
                 () -> error(ctx, NOT_FOUND, "Помилка", "Посилання не знайдено")
         );
