@@ -3,6 +3,7 @@ package dev.kovaliv.data.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Builder
@@ -25,7 +26,7 @@ public class Header {
     @Column(length = 1000, columnDefinition = "VARCHAR(1000)")
     private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "visit_id", nullable = false)
     private Visit visit;
 }

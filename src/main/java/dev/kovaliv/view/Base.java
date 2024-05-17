@@ -20,7 +20,7 @@ public class Base {
         List<Tag> tags = new ArrayList<>(List.of(
                 meta().withCharset("UTF-8"),
                 meta().withName("viewport").withContent("width=device-width, initial-scale=1.0"),
-                link().withRel("stylesheet").withHref("https://kovaliv.dev/css/main.css?1.6"),
+                link().withRel("stylesheet").withHref("https://kovaliv.dev/css/main.css?1.8"),
                 link().withRel("stylesheet").withHref("https://kovaliv.dev/css/icons.min.css"),
                 link().withRel("preconnect").withHref("https://fonts.macpaw.com").attr("crossorigin"),
                 link().withRel("stylesheet").withHref("https://fonts.macpaw.com/css?family=FixelDisplay:300"),
@@ -45,7 +45,7 @@ public class Base {
         return div(
                 hr(),
                 div("©2024 kovaliv.dev")
-        ).withClass("footer");
+        ).withClass("text-center");
     }
 
     public static HtmlTag getPage(String title, List<Tag> contents) {

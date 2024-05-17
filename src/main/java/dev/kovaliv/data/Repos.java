@@ -1,5 +1,6 @@
 package dev.kovaliv.data;
 
+import dev.kovaliv.data.repo.HeaderRepo;
 import dev.kovaliv.data.repo.LinkRepo;
 import dev.kovaliv.data.repo.VisitRepo;
 
@@ -13,5 +14,9 @@ public class Repos {
 
     public static VisitRepo visitRepo() {
         return context().getBean(VisitRepo.class);
+    }
+
+    public static HeaderRepo headerRepo() {
+        return context().getBean(HeaderRepo.class);
     }
 }

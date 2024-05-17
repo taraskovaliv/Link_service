@@ -113,11 +113,11 @@ public class Pages {
 
         BarOptions options = new BarOptions()
                 .setOnClick(new JavaScriptFunction(String.format("""
-                    function(elements, item) {
-                        let label = elements.chart.data.labels[item[0].index];
-                        window.location.href = '/statistic/%s/' + label;
-                    }
-                """, email)))
+                            function(elements, item) {
+                                let label = elements.chart.data.labels[item[0].index];
+                                window.location.href = '/statistic/%s/' + label;
+                            }
+                        """, email)))
                 .setIndexAxis(BarOptions.IndexAxis.Y);
         return new BarChart()
                 .setData(data)
@@ -185,7 +185,7 @@ public class Pages {
                                 .withPlaceholder("Email"),
                         br(),
                         button("Переглянути статистику")
-                                .withClasses("btn-primary")
+                                .withClasses("btn", "btn-primary")
                 ).withClasses("text-center")
                         .withMethod("post")
                         .withAction("/statistic")
@@ -209,7 +209,7 @@ public class Pages {
                                 .withPlaceholder("Ваш ключ доступу"),
                         br(),
                         button("Увійти")
-                                .withClasses("btn-primary")
+                                .withClasses("btn", "btn-primary")
                 ).withClasses("text-center")
                         .withMethod("post")
                         .withAction("/auth")
@@ -255,7 +255,7 @@ public class Pages {
                         br(),
                         button("Додати")
                                 .withId("add-link")
-                                .withClasses("btn-primary")
+                                .withClasses("btn", "btn-primary")
                 ).withClasses("text-center")
                         .withMethod("post")
                         .withAction("/add")

@@ -133,7 +133,6 @@ public class App {
         );
     }
 
-
     public static void success(Context ctx, String title, String message) {
         success(ctx, title, message, null);
     }
