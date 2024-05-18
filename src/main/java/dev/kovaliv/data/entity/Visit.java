@@ -34,6 +34,10 @@ public class Visit {
 
     private String country;
 
+    private String region;
+
+    private String city;
+
     private String language;
 
     private String campaign;

@@ -1,12 +1,19 @@
 package dev.kovaliv.tasks;
 
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import dev.kovaliv.Main;
 import dev.kovaliv.data.entity.Header;
 import dev.kovaliv.data.entity.Link;
 import dev.kovaliv.data.entity.Visit;
 import ua_parser.Parser;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +33,16 @@ public class SaveVisit extends Thread {
     private static final String X_FORWARDED_FOR = "x-forwarded-for";
 
     private final Parser parser = new Parser();
+    private final static DatabaseReader ipReader;
+
+    static {
+        try {
+            ipReader = new DatabaseReader.Builder(getDbFile()).build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String userAgent = "";
     private final Link link;
     private final String ip;
@@ -58,7 +75,9 @@ public class SaveVisit extends Thread {
                     .device(getDevice())
                     .browser(getBrowser())
                     .platform(getPlatform(headersMap))
-                    .country(getCountry(headersMap))
+                    .country(getCountry(headersMap, ip))
+                    .region(getRegion(ip))
+                    .city(getCity(ip))
                     .mobile(isMobile(headersMap))
                     .language(getLanguage(headersMap))
                     .campaign(getCampaign(queryParams))
@@ -143,13 +162,39 @@ public class SaveVisit extends Thread {
         return mobile;
     }
 
-    private static String getCountry(HashMap<String, String> headersMap) {
+    private static String getCountry(HashMap<String, String> headersMap, String ip) {
         String country = "";
         if (headersMap.containsKey(CF_IPCOUNTRY)) {
             country = headersMap.get(CF_IPCOUNTRY);
             headersMap.remove(CF_IPCOUNTRY);
         }
+        if (country.isBlank()) {
+            try {
+                InetAddress inetAddress = InetAddress.getByName(ip);
+                country = ipReader.country(inetAddress).getCountry().getIsoCode();
+            } catch (IOException | GeoIp2Exception e) {
+                return country;
+            }
+        }
         return country;
+    }
+
+    private static String getRegion(String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            return ipReader.city(inetAddress).getMostSpecificSubdivision().getName();
+        } catch (IOException | GeoIp2Exception e) {
+            return "";
+        }
+    }
+
+    private static String getCity(String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            return ipReader.city(inetAddress).getCity().getName();
+        } catch (IOException | GeoIp2Exception e) {
+            return "";
+        }
     }
 
     private static String getPlatform(HashMap<String, String> headersMap) {
@@ -184,5 +229,19 @@ public class SaveVisit extends Thread {
             headersMap.remove(X_FORWARDED_FOR);
         }
         return ip;
+    }
+
+    private static File getDbFile() {
+        ClassLoader classLoader = Main.class.getClassLoader();
+        URL resource = classLoader.getResource("GL2CT.mmdb");
+        if (resource == null) {
+            throw new IllegalArgumentException("file not found! " + "GL2CT.mmdb");
+        } else {
+            try {
+                return new File(resource.toURI());
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
