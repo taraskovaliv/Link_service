@@ -1,6 +1,7 @@
 package dev.kovaliv.view;
 
 import io.javalin.http.Context;
+import j2html.tags.DomContent;
 import j2html.tags.Tag;
 import j2html.tags.specialized.H1Tag;
 import j2html.tags.specialized.HtmlTag;
@@ -42,9 +43,9 @@ public class BasicPages {
     }
 
     private static H1Tag getH1WithLinks(String text) {
-        if (text.contains("http://") || text.contains("https://")) {
-            List<Tag> tags = splitToTagsWithLink(text);
-            return h1(tags.toArray(Tag[]::new))
+        if (isLink(text)) {
+            List<DomContent> tags = splitToTagsWithLink(text);
+            return h1(tags.toArray(DomContent[]::new))
                     .withClass("text-center")
                     .withStyle("margin-top: 10%; margin-bottom: 20px");
         }
@@ -54,20 +55,20 @@ public class BasicPages {
     }
 
     private static PTag getPWithLinks(String text) {
-        if (text.contains("http://") || text.contains("https://")) {
-            List<Tag> tags = splitToTagsWithLink(text);
-            return p(tags.toArray(Tag[]::new)).withClass("text-center");
+        if (isLink(text)) {
+            List<DomContent> tags = splitToTagsWithLink(text);
+            return p(tags.toArray(DomContent[]::new)).withClass("text-center");
         }
         return p(text).withClass("text-center");
     }
 
-    private static @NotNull List<Tag> splitToTagsWithLink(String text) {
+    private static @NotNull List<DomContent> splitToTagsWithLink(String text) {
         List<String> links = getLinks(text);
-        List<Tag> tags = new ArrayList<>();
+        List<DomContent> tags = new ArrayList<>();
         tags.add(span(text));
         for (String link : links) {
-            List<Tag> newTags = new ArrayList<>();
-            for (Tag tag : tags) {
+            List<DomContent> newTags = new ArrayList<>();
+            for (DomContent tag : tags) {
                 if (tag instanceof SpanTag spanTag) {
                     if (spanTag.render().contains(link)) {
                         String tmp = spanTag.render()
@@ -95,6 +96,10 @@ public class BasicPages {
         return tags;
     }
 
+    private static boolean isLink(String text) {
+        return text.contains("http://") || text.contains("https://");
+    }
+
     private static String trimLink(String link) {
         link = link.replaceAll("http://", "");
         link = link.replaceAll("https://", "");
@@ -106,7 +111,7 @@ public class BasicPages {
         List<String> links = new ArrayList<>();
         String[] words = text.split("\\s+");
         for (String word : words) {
-            if (word.contains("http://") || word.contains("https://")) {
+            if (isLink(word)) {
                 links.add(word);
             }
         }

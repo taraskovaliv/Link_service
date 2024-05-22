@@ -79,8 +79,7 @@ public class App {
     }
 
     private static void auth(Context ctx) {
-        String body = decode(ctx.body());
-        Map<String, String> params = parseParams(body);
+        Map<String, String> params = parseParams(ctx.body());
         ctx.sessionAttribute("auth", params.get("key"));
         String redirectPath = ctx.sessionAttribute("redirect_after_auth");
         if (redirectPath == null || redirectPath.isBlank()) {
@@ -116,8 +115,7 @@ public class App {
 
     private static void add(Context ctx) {
         log.debug("Add link");
-        String body = decode(ctx.body());
-        Map<String, String> params = parseParams(body);
+        Map<String, String> params = parseParams(ctx.body());
         linkRepo().findByName(params.get("name")).ifPresentOrElse(
                 link -> error(ctx, "Помилка", "Посилання з такою назвою вже існує"),
                 () -> {
@@ -180,6 +178,7 @@ public class App {
     }
 
     private static Map<String, String> parseParams(String body) {
+        body = decode(body);
         Map<String, String> result = new HashMap<>();
         Arrays.stream(body.split("&")).forEach(param -> {
             String[] keyValue = param.split("=");

@@ -36,7 +36,6 @@ import static java.util.stream.Collectors.groupingBy;
 
 public class Pages {
 
-
     public static HtmlTag getIndex() {
         return getPage("Лінк сервіс kovaliv.dev", getHomeContent());
     }
@@ -215,7 +214,6 @@ public class Pages {
                         .withAction("/auth")
                         .withStyle("margin-top: 15px")
         )
-                .withId("remove-user")
                 .withClasses("content", "text-center")
                 .withStyle("flex-direction: column; margin-top: 3%");
     }
