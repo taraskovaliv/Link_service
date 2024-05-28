@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static dev.kovaliv.config.ExecutorConfig.getExecutor;
 import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.view.BasicPages.getError;
 import static dev.kovaliv.view.BasicPages.getSuccess;
@@ -103,14 +105,21 @@ public class App {
                 }
                 return;
         }
+        AtomicReference<SaveVisit> visit = new AtomicReference<>();
         linkRepo().findByName(id).ifPresentOrElse(
                 link -> {
                     ctx.redirect(link.getUrl());
-                    new SaveVisit(link, ctx.ip(), new HashMap<>(ctx.headerMap()), new HashMap<>(ctx.queryParamMap()))
-                            .start();
+                    visit.set(new SaveVisit(
+                            link, ctx.ip(),
+                            new HashMap<>(ctx.headerMap()),
+                            new HashMap<>(ctx.queryParamMap())
+                    ));
                 },
                 () -> error(ctx, NOT_FOUND, "Помилка", "Посилання не знайдено")
         );
+        if (visit.get() != null) {
+            getExecutor().execute(visit.get());
+        }
     }
 
     private static void add(Context ctx) {
