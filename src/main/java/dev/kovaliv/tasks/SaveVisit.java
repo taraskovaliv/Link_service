@@ -1,5 +1,7 @@
 package dev.kovaliv.tasks;
 
+import com.maxmind.geoip2.WebServiceClient;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 import dev.kovaliv.App;
 import dev.kovaliv.data.entity.Header;
 import dev.kovaliv.data.entity.Link;
@@ -8,6 +10,8 @@ import lombok.extern.log4j.Log4j2;
 import ua_parser.Parser;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -16,6 +20,8 @@ import java.util.List;
 
 import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.data.Repos.visitRepo;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.getenv;
 
 @Log4j2
 public class SaveVisit implements Runnable {
@@ -31,15 +37,13 @@ public class SaveVisit implements Runnable {
     private static final String X_FORWARDED_FOR = "x-forwarded-for";
 
     private final Parser parser = new Parser();
-//    private final static DatabaseReader ipReader;
-//
-//    static {
-//        try {
-//            ipReader = new DatabaseReader.Builder(getDbFile()).build();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    private final static WebServiceClient client;
+
+    static {
+        client = new WebServiceClient
+                .Builder(parseInt(getenv("MAXMIND_ACCOUNT_ID")), getenv("MAXMIND_LICENCE_KEY"))
+                .build();
+    }
 
     private String userAgent = "";
     private final Link link;
@@ -73,9 +77,9 @@ public class SaveVisit implements Runnable {
                     .device(getDevice())
                     .browser(getBrowser())
                     .platform(getPlatform(headersMap))
-//                    .country(getCountry(headersMap, ip))
-//                    .region(getRegion(ip))
-//                    .city(getCity(ip))
+                    .country(getCountry(headersMap, ip))
+                    .region(getRegion(ip))
+                    .city(getCity(ip))
                     .mobile(isMobile(headersMap))
                     .language(getLanguage(headersMap))
                     .campaign(getCampaign(queryParams))
@@ -160,40 +164,40 @@ public class SaveVisit implements Runnable {
         return mobile;
     }
 
-//    private static String getCountry(HashMap<String, String> headersMap, String ip) {
-//        String country = "";
-//        if (headersMap.containsKey(CF_IPCOUNTRY)) {
-//            country = headersMap.get(CF_IPCOUNTRY);
-//            headersMap.remove(CF_IPCOUNTRY);
-//        }
-//        if (country.isBlank()) {
-//            try {
-//                InetAddress inetAddress = InetAddress.getByName(ip);
-//                country = ipReader.country(inetAddress).getCountry().getIsoCode();
-//            } catch (IOException | GeoIp2Exception e) {
-//                return country;
-//            }
-//        }
-//        return country;
-//    }
-//
-//    private static String getRegion(String ip) {
-//        try {
-//            InetAddress inetAddress = InetAddress.getByName(ip);
-//            return ipReader.city(inetAddress).getMostSpecificSubdivision().getName();
-//        } catch (IOException | GeoIp2Exception e) {
-//            return "";
-//        }
-//    }
-//
-//    private static String getCity(String ip) {
-//        try {
-//            InetAddress inetAddress = InetAddress.getByName(ip);
-//            return ipReader.city(inetAddress).getCity().getName();
-//        } catch (IOException | GeoIp2Exception e) {
-//            return "";
-//        }
-//    }
+    private static String getCountry(HashMap<String, String> headersMap, String ip) {
+        String country = "";
+        if (headersMap.containsKey(CF_IPCOUNTRY)) {
+            country = headersMap.get(CF_IPCOUNTRY);
+            headersMap.remove(CF_IPCOUNTRY);
+        }
+        if (country.isBlank()) {
+            try {
+                InetAddress inetAddress = InetAddress.getByName(ip);
+                country = client.country(inetAddress).getCountry().getIsoCode();
+            } catch (IOException | GeoIp2Exception e) {
+                return country;
+            }
+        }
+        return country;
+    }
+
+    private static String getRegion(String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            return client.city(inetAddress).getMostSpecificSubdivision().getName();
+        } catch (IOException | GeoIp2Exception e) {
+            return "";
+        }
+    }
+
+    private static String getCity(String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            return client.city(inetAddress).getCity().getName();
+        } catch (IOException | GeoIp2Exception e) {
+            return "";
+        }
+    }
 
     private static String getPlatform(HashMap<String, String> headersMap) {
         String platform = "";
