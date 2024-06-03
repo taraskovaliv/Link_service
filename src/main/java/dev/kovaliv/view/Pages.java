@@ -30,9 +30,13 @@ import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.data.Repos.visitRepo;
 import static dev.kovaliv.view.Base.getPage;
 import static j2html.TagCreator.*;
+import static java.math.BigDecimal.ZERO;
+import static java.time.LocalDate.now;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static software.xdev.chartjs.model.color.Color.DARK_GREEN;
+import static software.xdev.chartjs.model.options.scales.Scales.ScaleAxis.Y;
 
 public class Pages {
 
@@ -100,11 +104,10 @@ public class Pages {
                 .setLabel("Перегляди")
                 .setData(statisticByEmail.stream()
                         .map(StatisticDto::getCount)
-                        .map(BigDecimal::valueOf)
-                        .toList())
+                        .toArray(Long[]::new))
                 .setBorderWidth(2);
         dataset.addBackgroundColor(new Color(144, 238, 144));
-        dataset.addBorderColor(Color.DARK_GREEN);
+        dataset.addBorderColor(DARK_GREEN);
 
         BarData data = new BarData()
                 .addLabels(statisticByEmail.stream().map(StatisticDto::getName).toArray(String[]::new))
@@ -132,7 +135,7 @@ public class Pages {
                 .setBorderWidth(2)
                 .setLineTension(0.3f);
         dataset.setBackgroundColor(new Color(144, 238, 144));
-        dataset.setBorderColor(Color.DARK_GREEN);
+        dataset.setBorderColor(DARK_GREEN);
 
         LineData data = new LineData()
                 .addLabels(labelsAndData.getFirst().toArray(String[]::new))
@@ -140,8 +143,8 @@ public class Pages {
 
         LineOptions options = new LineOptions()
                 .setScales(new Scales()
-                        .addScale(Scales.ScaleAxis.Y, new LinearScale()
-                                .setMin(BigDecimal.ZERO)
+                        .addScale(Y, new LinearScale()
+                                .setMin(ZERO)
                                 .setTicks(new LinearTicks().setStepSize(1))));
 
         return new LineChart().setData(data).setOptions(options);
@@ -156,11 +159,11 @@ public class Pages {
         LocalDate min = data.keySet().stream()
                 .map(LocalDate::parse)
                 .min(LocalDate::compareTo)
-                .get();
+                .orElse(now());
         LocalDate max = data.keySet().stream()
                 .map(LocalDate::parse)
                 .max(LocalDate::compareTo)
-                .get()
+                .orElse(now())
                 .plusDays(1);
         List<String> labels = new ArrayList<>();
         List<BigDecimal> values = new ArrayList<>();

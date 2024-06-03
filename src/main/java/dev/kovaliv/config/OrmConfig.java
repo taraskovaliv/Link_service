@@ -44,6 +44,7 @@ public class OrmConfig {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan(databaseConfig.getPackages());
+        factory.setEntityManagerFactoryInterface(EntityManagerFactory.class);
         factory.setDataSource(dataSource);
 
         return factory;

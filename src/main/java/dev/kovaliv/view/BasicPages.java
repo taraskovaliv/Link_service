@@ -2,7 +2,6 @@ package dev.kovaliv.view;
 
 import io.javalin.http.Context;
 import j2html.tags.DomContent;
-import j2html.tags.Tag;
 import j2html.tags.specialized.H1Tag;
 import j2html.tags.specialized.HtmlTag;
 import j2html.tags.specialized.PTag;
@@ -23,7 +22,7 @@ public class BasicPages {
         String title = ctx.sessionAttribute("title");
         String message = requireNonNull(ctx.sessionAttribute("message"));
         String description = ctx.sessionAttribute("description");
-        List<Tag> body = new ArrayList<>();
+        List<DomContent> body = new ArrayList<>();
         body.add(getH1WithLinks(message));
         if (description != null && !description.isBlank()) {
             description = description.replaceAll("\n", "<br>");

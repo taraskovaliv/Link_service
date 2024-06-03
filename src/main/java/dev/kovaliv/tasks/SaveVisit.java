@@ -2,19 +2,16 @@ package dev.kovaliv.tasks;
 
 import com.maxmind.geoip2.WebServiceClient;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
-import dev.kovaliv.App;
 import dev.kovaliv.data.entity.Header;
 import dev.kovaliv.data.entity.Link;
 import dev.kovaliv.data.entity.Visit;
 import lombok.extern.log4j.Log4j2;
 import ua_parser.Parser;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
@@ -231,27 +228,5 @@ public class SaveVisit implements Runnable {
             headersMap.remove(X_FORWARDED_FOR);
         }
         return ip;
-    }
-
-    private static File getDbFile() {
-        File db = new File(System.getProperty("user.dir") + "/GL2CT.mmdb");
-        System.out.println(db.getAbsolutePath());
-        if (db.exists() && db.isFile()) {
-            return db;
-        } else {
-            log.warn("File not found: {}", db.getAbsolutePath());
-        }
-        ClassLoader classLoader = App.class.getClassLoader();
-        URL resource = classLoader.getResource("GL2CT.mmdb");
-        if (resource == null) {
-            throw new IllegalArgumentException("file not found! " + "GL2CT.mmdb");
-        } else {
-            try {
-                return new File(resource.getFile());
-            } catch (IllegalArgumentException e) {
-                log.warn("Error while reading file {}: {}", resource.getFile(), e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
