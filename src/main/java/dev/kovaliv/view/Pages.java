@@ -61,9 +61,14 @@ public class Pages {
     }
 
     private static DivTag getStatisticContentByEmailAndName(String email, String name) {
-        List<Visit> visits = visitRepo().findByLinkName(name);
+        List<Visit> visits = visitRepo().findByLinkName(name).stream()
+                .filter(v -> !v.isBot())
+                .toList();
         return div(
                 h1("Статистика для " + email + " по " + name),
+                div(
+                        p("Унікальних відвідувачів: " + countUnique(visits))
+                ).withClasses("home-content", "text-center").withStyle("margin-top: 3%"),
                 div(
                         div(
                                 canvas().withId("lineChart").withHeight("70%")
@@ -77,6 +82,13 @@ public class Pages {
         )
                 .withClasses("content", "text-center")
                 .withStyle("flex-direction: column; margin-top: 3%");
+    }
+
+    private static long countUnique(List<Visit> visits) {
+        return visits.stream()
+                .map(Visit::getIp)
+                .distinct()
+                .count();
     }
 
     private static DivTag getStatisticContentByEmail(String email) {

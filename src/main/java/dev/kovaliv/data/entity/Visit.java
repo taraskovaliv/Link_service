@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Builder
@@ -46,11 +47,14 @@ public class Visit {
 
     private boolean mobile;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "is_bot", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isBot;
+
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "link_id", nullable = false)
     private Link link;
 
-    @OneToMany(mappedBy = "visit", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "visit", fetch = EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Header> headers;
 
     @CreationTimestamp

@@ -83,6 +83,7 @@ public class SaveVisit implements Runnable {
                     .source(getReferer(headersMap))
                     .link(l)
                     .build();
+            visit.setBot(isBot(visit));
             List<Header> headers = headersMap.entrySet().stream()
                     .map(entry -> Header.builder()
                             .name(entry.getKey().toLowerCase())
@@ -95,7 +96,11 @@ public class SaveVisit implements Runnable {
         });
     }
 
-    private static String getReferer(HashMap<String, String> headersMap) {
+    public static boolean isBot(Visit visit) {
+        return visit.getDevice().equals("Spider") || visit.getBrowser().equals("Applebot");
+    }
+
+    public static String getReferer(HashMap<String, String> headersMap) {
         String source = "";
         if (headersMap.containsKey(REFERER)) {
             try {
@@ -161,7 +166,7 @@ public class SaveVisit implements Runnable {
         return mobile;
     }
 
-    private static String getCountry(HashMap<String, String> headersMap, String ip) {
+    public static String getCountry(HashMap<String, String> headersMap, String ip) {
         String country = "";
         if (headersMap.containsKey(CF_IPCOUNTRY)) {
             country = headersMap.get(CF_IPCOUNTRY);
@@ -178,7 +183,7 @@ public class SaveVisit implements Runnable {
         return country;
     }
 
-    private static String getRegion(String ip) {
+    public static String getRegion(String ip) {
         try {
             InetAddress inetAddress = InetAddress.getByName(ip);
             return client.city(inetAddress).getMostSpecificSubdivision().getName();
@@ -187,7 +192,7 @@ public class SaveVisit implements Runnable {
         }
     }
 
-    private static String getCity(String ip) {
+    public static String getCity(String ip) {
         try {
             InetAddress inetAddress = InetAddress.getByName(ip);
             return client.city(inetAddress).getCity().getName();
