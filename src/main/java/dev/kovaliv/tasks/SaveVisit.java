@@ -39,6 +39,7 @@ public class SaveVisit implements Runnable {
     static {
         client = new WebServiceClient
                 .Builder(parseInt(getenv("MAXMIND_ACCOUNT_ID")), getenv("MAXMIND_LICENCE_KEY"))
+                .host("geolite.info")
                 .build();
     }
 
@@ -176,6 +177,9 @@ public class SaveVisit implements Runnable {
             try {
                 InetAddress inetAddress = InetAddress.getByName(ip);
                 country = client.country(inetAddress).getCountry().getIsoCode();
+                if (country == null) {
+                    return "";
+                }
             } catch (IOException | GeoIp2Exception e) {
                 return country;
             }
@@ -186,7 +190,11 @@ public class SaveVisit implements Runnable {
     public static String getRegion(String ip) {
         try {
             InetAddress inetAddress = InetAddress.getByName(ip);
-            return client.city(inetAddress).getMostSpecificSubdivision().getName();
+            String region = client.city(inetAddress).getMostSpecificSubdivision().getName();
+            if (region == null) {
+                return "";
+            }
+            return region;
         } catch (IOException | GeoIp2Exception e) {
             return "";
         }
@@ -195,7 +203,11 @@ public class SaveVisit implements Runnable {
     public static String getCity(String ip) {
         try {
             InetAddress inetAddress = InetAddress.getByName(ip);
-            return client.city(inetAddress).getCity().getName();
+            String city = client.city(inetAddress).getCity().getName();
+            if (city == null) {
+                return "";
+            }
+            return city;
         } catch (IOException | GeoIp2Exception e) {
             return "";
         }

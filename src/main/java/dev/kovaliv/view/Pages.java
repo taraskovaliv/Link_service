@@ -22,9 +22,7 @@ import software.xdev.chartjs.model.options.ticks.LinearTicks;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.data.Repos.visitRepo;
@@ -71,13 +69,41 @@ public class Pages {
                 ).withClasses("home-content", "text-center").withStyle("margin-top: 3%"),
                 div(
                         div(
-                                canvas().withId("lineChart").withHeight("70%")
+                                canvas().withId("lineChart")
                         ),
                         script().withSrc("https://cdn.jsdelivr.net/npm/chart.js"),
                         script(String.format("""
-                                const ctx = document.getElementById('lineChart');
+                                let ctx = document.getElementById('lineChart');
                                 new Chart(document.getElementById('lineChart').getContext('2d'), %s);
-                                """, getLineChart(visits).toJson()))
+                                """, getLineChart(visits).toJson())),
+                        div(
+                                canvas().withId("barChartCountry")
+                        ),
+                        script(String.format("""
+                                ctx = document.getElementById('barChartCountry');
+                                new Chart(document.getElementById('barChartCountry').getContext('2d'), %s);
+                                """, getBarChartCountry(visits).toJson())),
+                        div(
+                                canvas().withId("barChartRegion")
+                        ),
+                        script(String.format("""
+                                ctx = document.getElementById('barChartRegion');
+                                new Chart(document.getElementById('barChartRegion').getContext('2d'), %s);
+                                """, getBarChartRegion(visits).toJson())),
+                        div(
+                                canvas().withId("barChartCity")
+                        ),
+                        script(String.format("""
+                                ctx = document.getElementById('barChartCity');
+                                new Chart(document.getElementById('barChartCity').getContext('2d'), %s);
+                                """, getBarChartCity(visits).toJson())),
+                        div(
+                                canvas().withId("barChartSource")
+                        ),
+                        script(String.format("""
+                                ctx = document.getElementById('barChartSource');
+                                new Chart(document.getElementById('barChartSource').getContext('2d'), %s);
+                                """, getBarChartSource(visits).toJson()))
                 ).withClass("home-content")
         )
                 .withClasses("content", "text-center")
@@ -132,6 +158,114 @@ public class Pages {
                                 window.location.href = '/statistic/%s/' + label;
                             }
                         """, email)))
+                .setIndexAxis(BarOptions.IndexAxis.Y);
+        return new BarChart()
+                .setData(data)
+                .setOptions(options);
+    }
+
+    private static BarChart getBarChartCountry(List<Visit> visits) {
+        Map<String, Long> statisticByEmail = visits.stream()
+                .collect(groupingBy(Visit::getCountry, counting()));
+        if (statisticByEmail.get("") != null) {
+            statisticByEmail.put("Unknown", statisticByEmail.get(""));
+            statisticByEmail.remove("");
+        }
+        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
+        sorted.putAll(statisticByEmail);
+        BarDataset dataset = new BarDataset()
+                .setLabel("Country")
+                .setData(sorted.values().toArray(Long[]::new))
+                .setBorderWidth(2);
+        dataset.addBackgroundColor(new Color(144, 238, 144));
+        dataset.addBorderColor(DARK_GREEN);
+
+        BarData data = new BarData()
+                .addLabels(sorted.keySet().toArray(String[]::new))
+                .addDataset(dataset);
+
+        BarOptions options = new BarOptions()
+                .setIndexAxis(BarOptions.IndexAxis.Y);
+        return new BarChart()
+                .setData(data)
+                .setOptions(options);
+    }
+
+    private static BarChart getBarChartRegion(List<Visit> visits) {
+        Map<String, Long> statisticByEmail = visits.stream()
+                .collect(groupingBy(Visit::getRegion, counting()));
+        if (statisticByEmail.get("") != null) {
+            statisticByEmail.put("Unknown", statisticByEmail.get(""));
+            statisticByEmail.remove("");
+        }
+        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
+        sorted.putAll(statisticByEmail);
+        BarDataset dataset = new BarDataset()
+                .setLabel("Region")
+                .setData(sorted.values().toArray(Long[]::new))
+                .setBorderWidth(2);
+        dataset.addBackgroundColor(new Color(144, 238, 144));
+        dataset.addBorderColor(DARK_GREEN);
+
+        BarData data = new BarData()
+                .addLabels(sorted.keySet().toArray(String[]::new))
+                .addDataset(dataset);
+
+        BarOptions options = new BarOptions()
+                .setIndexAxis(BarOptions.IndexAxis.Y);
+        return new BarChart()
+                .setData(data)
+                .setOptions(options);
+    }
+
+    private static BarChart getBarChartCity(List<Visit> visits) {
+        Map<String, Long> statisticByEmail = visits.stream()
+                .collect(groupingBy(Visit::getCity, counting()));
+        if (statisticByEmail.get("") != null) {
+            statisticByEmail.put("Unknown", statisticByEmail.get(""));
+            statisticByEmail.remove("");
+        }
+        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
+        sorted.putAll(statisticByEmail);
+        BarDataset dataset = new BarDataset()
+                .setLabel("City")
+                .setData(sorted.values().toArray(Long[]::new))
+                .setBorderWidth(2);
+        dataset.addBackgroundColor(new Color(144, 238, 144));
+        dataset.addBorderColor(DARK_GREEN);
+
+        BarData data = new BarData()
+                .addLabels(sorted.keySet().toArray(String[]::new))
+                .addDataset(dataset);
+
+        BarOptions options = new BarOptions()
+                .setIndexAxis(BarOptions.IndexAxis.Y);
+        return new BarChart()
+                .setData(data)
+                .setOptions(options);
+    }
+
+    private static BarChart getBarChartSource(List<Visit> visits) {
+        Map<String, Long> statisticByEmail = visits.stream()
+                .collect(groupingBy(Visit::getSource, counting()));
+        if (statisticByEmail.get("") != null) {
+            statisticByEmail.put("Unknown", statisticByEmail.get(""));
+            statisticByEmail.remove("");
+        }
+        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
+        sorted.putAll(statisticByEmail);
+        BarDataset dataset = new BarDataset()
+                .setLabel("Source")
+                .setData(sorted.values().toArray(Long[]::new))
+                .setBorderWidth(2);
+        dataset.addBackgroundColor(new Color(144, 238, 144));
+        dataset.addBorderColor(DARK_GREEN);
+
+        BarData data = new BarData()
+                .addLabels(sorted.keySet().toArray(String[]::new))
+                .addDataset(dataset);
+
+        BarOptions options = new BarOptions()
                 .setIndexAxis(BarOptions.IndexAxis.Y);
         return new BarChart()
                 .setData(data)
