@@ -7,6 +7,22 @@
     <groupId>dev.kovaliv</groupId>
     <artifactId>link-service</artifactId>
     <version>0.0.1</version>
+    <url>https://github.com/taraskovaliv/Link_service</url>
+    <description>Link_service - link shorter that store statistic of visiting it</description>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://github.com/taraskovaliv/Link_service/blob/master/LICENSE.md</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Taras Kovaliv</name>
+            <email>taras@kovaliv.dev</email>
+        </developer>
+    </developers>
 
     <properties>
         <java.version>21</java.version>

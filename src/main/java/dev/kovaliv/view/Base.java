@@ -4,6 +4,7 @@ import j2html.tags.DomContent;
 import j2html.tags.specialized.DivTag;
 import j2html.tags.specialized.HeadTag;
 import j2html.tags.specialized.HtmlTag;
+import j2html.tags.specialized.ScriptTag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,10 @@ public class Base {
                 hr(),
                 div("©2024 kovaliv.dev")
         ).withClass("text-center");
+    }
+
+    public static ScriptTag chartsJs() {
+        return script().withSrc("https://cdn.jsdelivr.net/npm/chart.js");
     }
 
     public static HtmlTag getPage(String title, List<DomContent> contents) {

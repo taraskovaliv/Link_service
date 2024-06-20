@@ -26,6 +26,7 @@ import java.util.*;
 
 import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.data.Repos.visitRepo;
+import static dev.kovaliv.view.Base.chartsJs;
 import static dev.kovaliv.view.Base.getPage;
 import static j2html.TagCreator.*;
 import static java.math.BigDecimal.ZERO;
@@ -37,6 +38,8 @@ import static software.xdev.chartjs.model.color.Color.DARK_GREEN;
 import static software.xdev.chartjs.model.options.scales.Scales.ScaleAxis.Y;
 
 public class Pages {
+
+    public static final Color BACKGROUND_COLOR = new Color(144, 238, 144);
 
     public static HtmlTag getIndex() {
         return getPage("Лінк сервіс kovaliv.dev", getHomeContent());
@@ -71,11 +74,11 @@ public class Pages {
                         div(
                                 canvas().withId("lineChart")
                         ),
-                        script().withSrc("https://cdn.jsdelivr.net/npm/chart.js"),
+                        chartsJs(),
                         script(String.format("""
                                 let ctx = document.getElementById('lineChart');
                                 new Chart(document.getElementById('lineChart').getContext('2d'), %s);
-                                """, getLineChart(visits).toJson())),
+                                """, getVisitsLineChart(visits).toJson())),
                         div(
                                 canvas().withId("barChartCountry")
                         ),
@@ -126,29 +129,29 @@ public class Pages {
                         div(
                                 canvas().withId("barChart").withHeight("70%")
                         ),
-                        script().withSrc("https://cdn.jsdelivr.net/npm/chart.js"),
+                        chartsJs(),
                         script(String.format("""
                                 const ctx = document.getElementById('barChart');
                                 new Chart(document.getElementById('barChart').getContext('2d'), %s);
-                                """, getBarChart(statisticByEmail, email).toJson()))
+                                """, getViewsBarChart(statisticByEmail, email).toJson()))
                 ).withClass("home-content")
         )
                 .withClasses("content", "text-center")
                 .withStyle("flex-direction: column; margin-top: 3%");
     }
 
-    private static BarChart getBarChart(List<StatisticDto> statisticByEmail, String email) {
+    private static BarChart getViewsBarChart(List<StatisticDto> statistics, String email) {
         BarDataset dataset = new BarDataset()
                 .setLabel("Перегляди")
-                .setData(statisticByEmail.stream()
+                .setData(statistics.stream()
                         .map(StatisticDto::getCount)
                         .toArray(Long[]::new))
                 .setBorderWidth(2);
-        dataset.addBackgroundColor(new Color(144, 238, 144));
+        dataset.addBackgroundColor(BACKGROUND_COLOR);
         dataset.addBorderColor(DARK_GREEN);
 
         BarData data = new BarData()
-                .addLabels(statisticByEmail.stream().map(StatisticDto::getName).toArray(String[]::new))
+                .addLabels(statistics.stream().map(StatisticDto::getName).toArray(String[]::new))
                 .addDataset(dataset);
 
         BarOptions options = new BarOptions()
@@ -165,100 +168,38 @@ public class Pages {
     }
 
     private static BarChart getBarChartCountry(List<Visit> visits) {
-        Map<String, Long> statisticByEmail = visits.stream()
-                .collect(groupingBy(Visit::getCountry, counting()));
-        if (statisticByEmail.get("") != null) {
-            statisticByEmail.put("Unknown", statisticByEmail.get(""));
-            statisticByEmail.remove("");
-        }
-        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
-        sorted.putAll(statisticByEmail);
-        BarDataset dataset = new BarDataset()
-                .setLabel("Country")
-                .setData(sorted.values().toArray(Long[]::new))
-                .setBorderWidth(2);
-        dataset.addBackgroundColor(new Color(144, 238, 144));
-        dataset.addBorderColor(DARK_GREEN);
-
-        BarData data = new BarData()
-                .addLabels(sorted.keySet().toArray(String[]::new))
-                .addDataset(dataset);
-
-        BarOptions options = new BarOptions()
-                .setIndexAxis(BarOptions.IndexAxis.Y);
-        return new BarChart()
-                .setData(data)
-                .setOptions(options);
+        var statistic = visits.stream().collect(groupingBy(Visit::getCountry, counting()));
+        return getViewsBarChart(statistic, "Country");
     }
 
     private static BarChart getBarChartRegion(List<Visit> visits) {
-        Map<String, Long> statisticByEmail = visits.stream()
-                .collect(groupingBy(Visit::getRegion, counting()));
-        if (statisticByEmail.get("") != null) {
-            statisticByEmail.put("Unknown", statisticByEmail.get(""));
-            statisticByEmail.remove("");
-        }
-        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
-        sorted.putAll(statisticByEmail);
-        BarDataset dataset = new BarDataset()
-                .setLabel("Region")
-                .setData(sorted.values().toArray(Long[]::new))
-                .setBorderWidth(2);
-        dataset.addBackgroundColor(new Color(144, 238, 144));
-        dataset.addBorderColor(DARK_GREEN);
-
-        BarData data = new BarData()
-                .addLabels(sorted.keySet().toArray(String[]::new))
-                .addDataset(dataset);
-
-        BarOptions options = new BarOptions()
-                .setIndexAxis(BarOptions.IndexAxis.Y);
-        return new BarChart()
-                .setData(data)
-                .setOptions(options);
+        var statistic = visits.stream().collect(groupingBy(Visit::getRegion, counting()));
+        return getViewsBarChart(statistic, "Region");
     }
 
     private static BarChart getBarChartCity(List<Visit> visits) {
-        Map<String, Long> statisticByEmail = visits.stream()
-                .collect(groupingBy(Visit::getCity, counting()));
-        if (statisticByEmail.get("") != null) {
-            statisticByEmail.put("Unknown", statisticByEmail.get(""));
-            statisticByEmail.remove("");
-        }
-        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
-        sorted.putAll(statisticByEmail);
-        BarDataset dataset = new BarDataset()
-                .setLabel("City")
-                .setData(sorted.values().toArray(Long[]::new))
-                .setBorderWidth(2);
-        dataset.addBackgroundColor(new Color(144, 238, 144));
-        dataset.addBorderColor(DARK_GREEN);
-
-        BarData data = new BarData()
-                .addLabels(sorted.keySet().toArray(String[]::new))
-                .addDataset(dataset);
-
-        BarOptions options = new BarOptions()
-                .setIndexAxis(BarOptions.IndexAxis.Y);
-        return new BarChart()
-                .setData(data)
-                .setOptions(options);
+        var statistic = visits.stream().collect(groupingBy(Visit::getCity, counting()));
+        return getViewsBarChart(statistic, "City");
     }
 
     private static BarChart getBarChartSource(List<Visit> visits) {
-        Map<String, Long> statisticByEmail = visits.stream()
-                .collect(groupingBy(Visit::getSource, counting()));
-        if (statisticByEmail.get("") != null) {
-            statisticByEmail.put("Unknown", statisticByEmail.get(""));
-            statisticByEmail.remove("");
+        var statistic = visits.stream().collect(groupingBy(Visit::getSource, counting()));
+        return getViewsBarChart(statistic, "Source");
+    }
+
+    private static BarChart getViewsBarChart(Map<String, Long> statistic, String label) {
+        if (statistic.get("") != null) {
+            statistic.put("Unknown", statistic.get(""));
+            statistic.remove("");
         }
-        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statisticByEmail.get(b).compareTo(statisticByEmail.get(a)));
-        sorted.putAll(statisticByEmail);
+        SortedMap<String, Long> sorted = new TreeMap<>((a, b) -> statistic.get(b).compareTo(statistic.get(a)));
+        sorted.putAll(statistic);
+
         BarDataset dataset = new BarDataset()
-                .setLabel("Source")
+                .setLabel(label)
                 .setData(sorted.values().toArray(Long[]::new))
                 .setBorderWidth(2);
-        dataset.addBackgroundColor(new Color(144, 238, 144));
+        dataset.addBackgroundColor(BACKGROUND_COLOR);
         dataset.addBorderColor(DARK_GREEN);
 
         BarData data = new BarData()
@@ -272,7 +213,7 @@ public class Pages {
                 .setOptions(options);
     }
 
-    private static LineChart getLineChart(List<Visit> visits) {
+    private static LineChart getVisitsLineChart(List<Visit> visits) {
         Pair<List<String>, List<BigDecimal>> labelsAndData = formatVisits(visits);
 
         LineDataset dataset = new LineDataset()
@@ -280,7 +221,7 @@ public class Pages {
                 .setData(labelsAndData.getSecond().toArray(BigDecimal[]::new))
                 .setBorderWidth(2)
                 .setLineTension(0.3f);
-        dataset.setBackgroundColor(new Color(144, 238, 144));
+        dataset.setBackgroundColor(BACKGROUND_COLOR);
         dataset.setBorderColor(DARK_GREEN);
 
         LineData data = new LineData()
