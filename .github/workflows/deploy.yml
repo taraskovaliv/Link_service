@@ -1,0 +1,20 @@
+name: Deploy to Docker
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Clean up Docker
+      run: docker system prune -a -f
+    - uses: actions/checkout@v4
+    - name: Copy env
+      run: cp ~/Link_service/link_server.env link_server.env
+    - name: Build and Run Docker image
+      run: docker compose up -d --build
