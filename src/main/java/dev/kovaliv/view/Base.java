@@ -35,7 +35,11 @@ public class Base {
         return div(
                 div(
                         a("LinkService").withHref("/")
-                ).withClass("logo")
+                ).withClass("logo"),
+                div(
+                        a("QR генератор").withHref("/qr").withStyle("margin-right: 20px"),
+                        a("Статистика відвідувань").withHref("/statistic")
+                ).withStyle("margin-top: 25px")
         ).withClasses("header");
     }
 

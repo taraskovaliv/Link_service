@@ -43,6 +43,7 @@
         <uap-java.version>1.6.1</uap-java.version>
         <chartjs-java-model.version>1.4.1</chartjs-java-model.version>
         <geoip2.version>4.2.0</geoip2.version>
+        <qr-code-with-logo.version>0.3.0</qr-code-with-logo.version>
     </properties>
 
     <dependencies>
@@ -116,6 +117,11 @@
             <groupId>com.maxmind.geoip2</groupId>
             <artifactId>geoip2</artifactId>
             <version>${geoip2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.simonscholz</groupId>
+            <artifactId>qr-code-with-logo</artifactId>
+            <version>${qr-code-with-logo.version}</version>
         </dependency>
     </dependencies>
     <build>

@@ -45,6 +45,10 @@ public class Pages {
         return getPage("Лінк сервіс kovaliv.dev", getHomeContent());
     }
 
+    public static HtmlTag getQr() {
+        return getPage("QR-код генератор", getQrContent());
+    }
+
     public static HtmlTag getAuth() {
         return getPage("Авторизація", getAuthContent());
     }
@@ -342,14 +346,35 @@ public class Pages {
                                 .withPlaceholder("Опис посилання"),
                         br(),
                         button("Додати")
-                                .withId("add-link")
                                 .withClasses("btn", "btn-primary")
                 ).withClasses("text-center")
                         .withMethod("post")
                         .withAction("/add")
                         .withStyle("margin-top: 3%")
         )
-                .withId("remove-user")
+                .withClasses("content", "text-center")
+                .withStyle("flex-direction: column; margin-top: 3%");
+    }
+
+    private static DivTag getQrContent() {
+        return div(
+                h1("Генератор QR-кодів"),
+                form(
+                        label().attr("for", "url"),
+                        input()
+                                .withId("url")
+                                .withType("url")
+                                .withName("url")
+                                .attr("required")
+                                .withPlaceholder("Посилання"),
+                        br(),
+                        button("Згенерувати")
+                                .withClasses("btn", "btn-primary")
+                ).withClasses("text-center")
+                        .withMethod("post")
+                        .withAction("/qr")
+                        .withStyle("margin-top: 3%")
+        )
                 .withClasses("content", "text-center")
                 .withStyle("flex-direction: column; margin-top: 3%");
     }
