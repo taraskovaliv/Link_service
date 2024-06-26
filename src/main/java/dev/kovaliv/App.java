@@ -14,6 +14,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -54,6 +55,7 @@ public class App {
         QrCodeApi qrCodeApi = QrCodeFactory.createQrCodeApi();
         QrCodeConfig config = new QrCodeConfig.Builder(params.get("url"))
                 .qrCodeSize(DEFAULT_IMG_SIZE)
+                .qrCodeColorConfig(Color.decode(params.get("bg_color")), Color.decode(params.get("color")))
                 .build();
         final var qrCode = qrCodeApi.createQrCodeImage(config);
         File output = createNewRandomImage();

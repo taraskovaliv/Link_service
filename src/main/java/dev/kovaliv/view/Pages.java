@@ -368,6 +368,24 @@ public class Pages {
                                 .attr("required")
                                 .withPlaceholder("Посилання"),
                         br(),
+                        input()
+                                .withId("bg_color")
+                                .withType("color")
+                                .withValue("#FFFFFF")
+                                .withName("bg_color"),
+                        label("Колір фону")
+                                .withStyle("margin-left: 14px")
+                                .attr("for", "bg_color"),
+                        br(),
+                        input()
+                                .withId("color")
+                                .withType("color")
+                                .withValue("#000000")
+                                .withName("color"),
+                        label("Колір коду")
+                                .withStyle("margin-left: 14px")
+                                .attr("for", "color"),
+                        br(),
                         button("Згенерувати")
                                 .withClasses("btn", "btn-primary")
                 ).withClasses("text-center")
