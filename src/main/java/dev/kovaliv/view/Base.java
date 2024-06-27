@@ -23,6 +23,9 @@ public class Base {
                 link().withRel("preconnect").withHref("https://fonts.macpaw.com").attr("crossorigin"),
                 link().withRel("stylesheet").withHref("https://fonts.macpaw.com/css?family=FixelDisplay:300"),
                 link().withRel("icon").withType("image/x-icon").withHref("https://kovaliv.dev/img/favicon.ico"),
+                script().attr("defer")
+                        .attr("data-domain", "link.kovaliv.dev")
+                        .withSrc("https://plausible.kovaliv.dev/js/script.js"),
                 title(title)
         ));
         if (additionalTags != null && !additionalTags.isEmpty()) {

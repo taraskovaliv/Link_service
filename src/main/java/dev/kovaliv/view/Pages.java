@@ -49,6 +49,14 @@ public class Pages {
         return getPage("QR-код генератор", getQrContent());
     }
 
+    public static HtmlTag getQr(String id) {
+        return getPage("QR-код", div(
+                img().withSrc("/img/" + id + ".png")
+                        .withStyle("margin-top: 5%; margin-bottom: 5%")
+                        .withAlt("QR-код")
+        ).withClass("text-center"));
+    }
+
     public static HtmlTag getAuth() {
         return getPage("Авторизація", getAuthContent());
     }

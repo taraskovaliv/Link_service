@@ -9,7 +9,6 @@ import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import io.javalin.http.staticfiles.Location;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
@@ -29,7 +28,6 @@ import static dev.kovaliv.data.Repos.linkRepo;
 import static dev.kovaliv.view.BasicPages.getError;
 import static dev.kovaliv.view.BasicPages.getSuccess;
 import static dev.kovaliv.view.Pages.*;
-import static io.github.simonscholz.qrcode.QrCodeConfigKt.DEFAULT_IMG_SIZE;
 import static io.javalin.http.HttpStatus.BAD_REQUEST;
 import static io.javalin.http.HttpStatus.NOT_FOUND;
 import static java.lang.System.getenv;
@@ -37,9 +35,11 @@ import static java.lang.System.getenv;
 @Log4j2
 public class App {
     public static Javalin app() {
-        return Javalin.create(conf -> conf.staticFiles.add("/", Location.CLASSPATH))
+        return Javalin.create()
                 .get("/", App::home)
                 .post("/qr", App::qr)
+                .get("/qr/{id}", App::qrById)
+                .get("/img/{name}", App::getImg)
                 .post("/add", App::add)
                 .post("/auth", App::auth)
                 .post("/statistic", App::statisticOpen)
@@ -48,20 +48,30 @@ public class App {
                 .get("/{id}", App::redirectById);
     }
 
+    private static void qrById(Context ctx) {
+        String id = ctx.pathParam("id");
+        ctx.html(getQr(id).render());
+    }
+
+    @SneakyThrows
+    private static void getImg(Context ctx) {
+        String name = ctx.pathParam("name");
+        ctx.result(Files.readAllBytes(Path.of("img/" + name)))
+                .contentType(ContentType.IMAGE_PNG);
+    }
+
     @SneakyThrows
     private static void qr(Context ctx) {
         log.debug("Generate QR code");
         Map<String, String> params = parseParams(ctx.body());
         QrCodeApi qrCodeApi = QrCodeFactory.createQrCodeApi();
         QrCodeConfig config = new QrCodeConfig.Builder(params.get("url"))
-                .qrCodeSize(DEFAULT_IMG_SIZE)
                 .qrCodeColorConfig(Color.decode(params.get("bg_color")), Color.decode(params.get("color")))
                 .build();
         final var qrCode = qrCodeApi.createQrCodeImage(config);
         File output = createNewRandomImage();
         ImageIO.write(qrCode, "png", output);
-        ctx.result(Files.readAllBytes(output.toPath()));
-        ctx.contentType(ContentType.IMAGE_PNG);
+        ctx.redirect("/qr/" + output.getName().replaceAll("\\.png", ""));
     }
 
     private static File createNewRandomImage() {
