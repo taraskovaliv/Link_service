@@ -66,6 +66,7 @@ public class App {
         Map<String, String> params = parseParams(ctx.body());
         QrCodeApi qrCodeApi = QrCodeFactory.createQrCodeApi();
         QrCodeConfig config = new QrCodeConfig.Builder(params.get("url"))
+                .qrCodeSize(Integer.parseInt(params.get("size")))
                 .qrCodeColorConfig(Color.decode(params.get("bg_color")), Color.decode(params.get("color")))
                 .build();
         final var qrCode = qrCodeApi.createQrCodeImage(config);

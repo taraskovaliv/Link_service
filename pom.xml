@@ -30,18 +30,18 @@
         <javalin.version>6.1.6</javalin.version>
         <j2html.version>1.6.0</j2html.version>
         <log4j.version>2.23.1</log4j.version>
-        <lombok.version>1.18.32</lombok.version>
-        <spring-context.version>6.1.8</spring-context.version>
-        <spring-data-jpa.version>3.3.0</spring-data-jpa.version>
+        <lombok.version>1.18.34</lombok.version>
+        <spring-context.version>6.1.10</spring-context.version>
+        <spring-data-jpa.version>3.3.1</spring-data-jpa.version>
         <HikariCP.version>5.1.0</HikariCP.version>
-        <hibernate-core.version>6.5.2.Final</hibernate-core.version>
+        <hibernate-core.version>6.6.0.CR1</hibernate-core.version>
         <postgresql.version>42.7.3</postgresql.version>
         <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
         <slf4j-simple.version>2.0.13</slf4j-simple.version>
         <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <uap-java.version>1.6.1</uap-java.version>
-        <chartjs-java-model.version>1.4.1</chartjs-java-model.version>
+        <chartjs-java-model.version>2.0.1</chartjs-java-model.version>
         <geoip2.version>4.2.0</geoip2.version>
         <qr-code-with-logo.version>0.3.0</qr-code-with-logo.version>
     </properties>

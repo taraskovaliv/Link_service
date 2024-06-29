@@ -15,9 +15,9 @@ import software.xdev.chartjs.model.dataset.LineDataset;
 import software.xdev.chartjs.model.javascript.JavaScriptFunction;
 import software.xdev.chartjs.model.options.BarOptions;
 import software.xdev.chartjs.model.options.LineOptions;
-import software.xdev.chartjs.model.options.scales.LinearScale;
-import software.xdev.chartjs.model.options.scales.Scales;
-import software.xdev.chartjs.model.options.ticks.LinearTicks;
+import software.xdev.chartjs.model.options.scale.Scales;
+import software.xdev.chartjs.model.options.scale.cartesian.linear.LinearScaleOptions;
+import software.xdev.chartjs.model.options.scale.cartesian.linear.LinearTickOptions;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,7 +35,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static software.xdev.chartjs.model.color.Color.DARK_GREEN;
-import static software.xdev.chartjs.model.options.scales.Scales.ScaleAxis.Y;
+import static software.xdev.chartjs.model.options.scale.Scales.ScaleAxis.Y;
 
 public class Pages {
 
@@ -242,9 +242,9 @@ public class Pages {
 
         LineOptions options = new LineOptions()
                 .setScales(new Scales()
-                        .addScale(Y, new LinearScale()
+                        .addScale(Y, new LinearScaleOptions()
                                 .setMin(ZERO)
-                                .setTicks(new LinearTicks().setStepSize(1))));
+                                .setTicks(new LinearTickOptions().setStepSize(1))));
 
         return new LineChart().setData(data).setOptions(options);
     }
@@ -375,6 +375,16 @@ public class Pages {
                                 .withName("url")
                                 .attr("required")
                                 .withPlaceholder("Посилання"),
+                        br(),
+                        input()
+                                .withId("size")
+                                .withType("number")
+                                .withValue("300")
+                                .withCondMin(true, "300")
+                                .withName("size"),
+                        label("Розмір QR-коду в px. (мінімум 300)")
+                                .withStyle("margin-left: 14px")
+                                .attr("for", "size"),
                         br(),
                         input()
                                 .withId("bg_color")
