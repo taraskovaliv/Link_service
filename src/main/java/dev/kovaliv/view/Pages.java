@@ -77,16 +77,26 @@ public class Pages {
         List<Visit> visits = visitRepo().findByLinkName(name).stream()
                 .filter(v -> !v.isBot())
                 .toList();
+        if (visits.isEmpty()) {
+            return div(
+                    h1("Статистика для " + email + " по " + name),
+                    div(
+                            p("Немає унікальних відвідувачів")
+                    ).withClasses("home-content", "text-center").withStyle("margin-top: 3%")
+            )
+                    .withClasses("content", "text-center")
+                    .withStyle("flex-direction: column; margin-top: 3%");
+        }
         return div(
                 h1("Статистика для " + email + " по " + name),
                 div(
                         p("Унікальних відвідувачів: " + countUnique(visits))
                 ).withClasses("home-content", "text-center").withStyle("margin-top: 3%"),
                 div(
+                        chartsJs(),
                         div(
                                 canvas().withId("lineChart")
                         ),
-                        chartsJs(),
                         script(String.format("""
                                 let ctx = document.getElementById('lineChart');
                                 new Chart(document.getElementById('lineChart').getContext('2d'), %s);
@@ -135,6 +145,16 @@ public class Pages {
     private static DivTag getStatisticContentByEmail(String email) {
         List<StatisticDto> statisticByEmail = linkRepo().getStatisticByEmail(email);
 
+        if (statisticByEmail.isEmpty()) {
+            return div(
+                    h1("Статистика для " + email),
+                    div(
+                            h3("Немає статистики для даного email")
+                    ).withClass("home-content")
+            )
+                    .withClasses("content", "text-center")
+                    .withStyle("flex-direction: column; margin-top: 3%");
+        }
         return div(
                 h1("Статистика для " + email),
                 div(
