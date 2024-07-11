@@ -31,7 +31,7 @@
         <j2html.version>1.6.0</j2html.version>
         <log4j.version>2.23.1</log4j.version>
         <lombok.version>1.18.34</lombok.version>
-        <spring-context.version>6.1.10</spring-context.version>
+        <spring-context.version>6.1.11</spring-context.version>
         <spring-data-jpa.version>3.3.1</spring-data-jpa.version>
         <HikariCP.version>5.1.0</HikariCP.version>
         <hibernate-core.version>6.6.0.CR1</hibernate-core.version>
