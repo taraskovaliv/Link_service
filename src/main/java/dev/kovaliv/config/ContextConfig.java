@@ -8,7 +8,7 @@ import java.util.TimeZone;
 public class ContextConfig {
     private static ApplicationContext context;
 
-    public static ApplicationContext context() {
+    public synchronized static ApplicationContext context() {
         if (context == null) {
             TimeZone.setDefault(TimeZone.getTimeZone("Kyiv/Europe"));
             context = new AnnotationConfigApplicationContext("dev.kovaliv");
