@@ -89,16 +89,16 @@ public class App {
     }
 
     private static void statisticByEmail(Context context) {
-        String email = context.pathParam("email");
         if (isAuthenticated(context)) {
+            String email = context.pathParam("email");
             context.html(getStatisticByEmail(email).render());
         }
     }
 
     private static void statisticByEmailAndName(Context context) {
-        String email = context.pathParam("email");
-        String name = context.pathParam("name");
         if (isAuthenticated(context)) {
+            String email = context.pathParam("email");
+            String name = context.pathParam("name");
             context.html(getStatisticByEmailAndName(email, name).render());
         }
     }
@@ -245,7 +245,10 @@ public class App {
         Map<String, String> result = new HashMap<>();
         Arrays.stream(body.split("&")).forEach(param -> {
             String[] keyValue = param.split("=");
-            if (keyValue.length == 2) {
+            if (keyValue.length >= 2) {
+                if (keyValue.length > 2) {
+                    keyValue[1] = Arrays.stream(keyValue).skip(1).reduce((s1, s2) -> s1 + "=" + s2).orElse("");
+                }
                 result.put(keyValue[0].toLowerCase(), keyValue[1]);
             }
         });

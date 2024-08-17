@@ -126,7 +126,7 @@ public class SaveVisit implements Runnable {
             case "bing.com" -> "Bing";
             case "yahoo.com" -> "Yahoo";
             case "t.co", "x.com", "twitter.com" -> "Twitter";
-            case "facebook.com" -> "Facebook";
+            case "facebook.com", "fb.com" -> "Facebook";
             case "instagram.com" -> "Instagram";
             case "linkedin.com" -> "LinkedIn";
             case "pinterest.com" -> "Pinterest";
