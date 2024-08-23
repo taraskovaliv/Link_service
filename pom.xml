@@ -27,7 +27,7 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javalin.version>6.2.0</javalin.version>
+        <javalin.version>6.3.0</javalin.version>
         <j2html.version>1.6.0</j2html.version>
         <log4j.version>2.23.1</log4j.version>
         <lombok.version>1.18.34</lombok.version>
