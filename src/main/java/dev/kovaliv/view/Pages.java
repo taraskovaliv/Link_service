@@ -7,21 +7,23 @@ import j2html.tags.specialized.HtmlTag;
 import org.springframework.data.util.Pair;
 import software.xdev.chartjs.model.charts.BarChart;
 import software.xdev.chartjs.model.charts.LineChart;
-import software.xdev.chartjs.model.color.Color;
 import software.xdev.chartjs.model.data.BarData;
 import software.xdev.chartjs.model.data.LineData;
 import software.xdev.chartjs.model.dataset.BarDataset;
 import software.xdev.chartjs.model.dataset.LineDataset;
 import software.xdev.chartjs.model.javascript.JavaScriptFunction;
 import software.xdev.chartjs.model.options.BarOptions;
+import software.xdev.chartjs.model.options.IndexAxis;
 import software.xdev.chartjs.model.options.LineOptions;
 import software.xdev.chartjs.model.options.scale.Scales;
 import software.xdev.chartjs.model.options.scale.cartesian.linear.LinearScaleOptions;
 import software.xdev.chartjs.model.options.scale.cartesian.linear.LinearTickOptions;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.*;
 
 import static dev.kovaliv.data.Repos.linkRepo;
@@ -34,7 +36,7 @@ import static java.time.LocalDate.now;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
-import static software.xdev.chartjs.model.color.Color.DARK_GREEN;
+import static software.xdev.chartjs.model.color.RGBAColor.DARK_GREEN;
 import static software.xdev.chartjs.model.options.scale.Scales.ScaleAxis.Y;
 
 public class Pages {
@@ -193,7 +195,7 @@ public class Pages {
                                 window.location.href = '/statistic/%s/' + label;
                             }
                         """, email)))
-                .setIndexAxis(BarOptions.IndexAxis.Y);
+                .setIndexAxis(IndexAxis.Y);
         return new BarChart()
                 .setData(data)
                 .setOptions(options);
@@ -239,7 +241,7 @@ public class Pages {
                 .addDataset(dataset);
 
         BarOptions options = new BarOptions()
-                .setIndexAxis(BarOptions.IndexAxis.Y);
+                .setIndexAxis(IndexAxis.Y);
         return new BarChart()
                 .setData(data)
                 .setOptions(options);
