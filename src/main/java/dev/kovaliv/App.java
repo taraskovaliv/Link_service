@@ -1,56 +1,118 @@
 package dev.kovaliv;
 
 import dev.kovaliv.data.entity.Link;
+import dev.kovaliv.services.UserValidation;
 import dev.kovaliv.tasks.SaveVisit;
+import dev.kovaliv.view.def.AbstractBasicGetNav;
+import dev.kovaliv.view.def.GetNav;
 import io.github.simonscholz.qrcode.QrCodeApi;
 import io.github.simonscholz.qrcode.QrCodeConfig;
 import io.github.simonscholz.qrcode.QrCodeFactory;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
-import io.javalin.http.HttpStatus;
+import j2html.tags.DomContent;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static dev.kovaliv.config.ExecutorConfig.getExecutor;
 import static dev.kovaliv.data.Repos.linkRepo;
-import static dev.kovaliv.view.BasicPages.getError;
-import static dev.kovaliv.view.BasicPages.getSuccess;
 import static dev.kovaliv.view.Pages.*;
-import static io.javalin.http.HttpStatus.BAD_REQUEST;
 import static io.javalin.http.HttpStatus.NOT_FOUND;
+import static j2html.TagCreator.link;
 import static java.lang.System.getenv;
 
 @Log4j2
-public class App {
-    public static Javalin app() {
-        return Javalin.create()
-                .get("/", App::home)
+public class App extends AbstractApp {
+
+    @Override
+    protected void addEndpoints(Javalin app) {
+        app
+                .get("/", this::home)
                 .post("/qr", App::qr)
                 .get("/qr/{id}", App::qrById)
                 .get("/img/{name}", App::getImg)
                 .post("/add", App::add)
                 .post("/auth", App::auth)
                 .post("/statistic", App::statisticOpen)
-                .get("/statistic/{email}", App::statisticByEmail)
-                .get("/statistic/{email}/{name}", App::statisticByEmailAndName)
-                .get("/{id}", App::redirectById);
+                .get("/statistic/{email}", this::statisticByEmail)
+                .get("/statistic/{email}/{name}", this::statisticByEmailAndName)
+                .get("/{id}", this::redirectById);
+    }
+
+    @Override
+    protected GetNav nav() {
+        return new AbstractBasicGetNav() {
+            @Override
+            public Map<String, String> getMenuItems(String lang, boolean isAuth) {
+                if (isAuth) {
+                    return Map.of(
+                            "QR генератор", "/qr",
+                            "Статистика відвідувань", "/statistic"
+                    );
+                }
+                return Map.of("QR генератор", "/qr");
+            }
+
+            @Override
+            public Logo getLogo(String s) {
+                //TODO add logo.svg
+                return new Logo("/img/logo.svg", "LinkService", "376", "74");
+            }
+        };
+    }
+
+    @Override
+    protected UserValidation userValidation() {
+        return new UserValidation() {
+            @Override
+            public boolean isAuthenticated(Context ctx) {
+                String auth = ctx.sessionAttribute("auth");
+                return auth != null && auth.equals(getenv("MODERATION_KEY"));
+            }
+
+            @Override
+            public boolean authenticate(Context ctx) {
+                String key = ctx.queryParam("key");
+                if (key != null && key.equals(getenv("MODERATION_KEY"))) {
+                    ctx.sessionAttribute("auth", key);
+                    ctx.redirect(ctx.path());
+                    return false;
+                }
+                String auth = ctx.sessionAttribute("auth");
+                if (auth != null && auth.equals(getenv("MODERATION_KEY"))) {
+                    return true;
+                }
+                ctx.status(401);
+                ctx.sessionAttribute("redirect_after_auth", ctx.path());
+                ctx.html(getAuth(ctx).render());
+                return false;
+            }
+        };
+    }
+
+    @Override
+    protected List<DomContent> defaultHeadAdditionalTags() {
+        return List.of(
+                link().withRel("stylesheet").withHref("/css/main.css")
+        );
     }
 
     private static void qrById(Context ctx) {
         String id = ctx.pathParam("id");
-        ctx.html(getQr(id).render());
+        ctx.html(getQr(id, ctx).render());
     }
 
     @SneakyThrows
@@ -88,18 +150,18 @@ public class App {
         }
     }
 
-    private static void statisticByEmail(Context context) {
-        if (isAuthenticated(context)) {
-            String email = context.pathParam("email");
-            context.html(getStatisticByEmail(email).render());
+    private void statisticByEmail(Context ctx) {
+        if (authenticate(ctx)) {
+            String email = ctx.pathParam("email");
+            ctx.html(getStatisticByEmail(email, ctx).render());
         }
     }
 
-    private static void statisticByEmailAndName(Context context) {
-        if (isAuthenticated(context)) {
-            String email = context.pathParam("email");
-            String name = context.pathParam("name");
-            context.html(getStatisticByEmailAndName(email, name).render());
+    private void statisticByEmailAndName(Context ctx) {
+        if (authenticate(ctx)) {
+            String email = ctx.pathParam("email");
+            String name = ctx.pathParam("name");
+            ctx.html(getStatisticByEmailAndName(email, name, ctx).render());
         }
     }
 
@@ -108,27 +170,10 @@ public class App {
         context.redirect("/statistic/" + email);
     }
 
-    private static void home(Context ctx) {
-        if (isAuthenticated(ctx)) {
-            ctx.html(getIndex().render());
+    private void home(Context ctx) {
+        if (authenticate(ctx)) {
+            ctx.html(getIndex(ctx).render());
         }
-    }
-
-    private static boolean isAuthenticated(Context ctx) {
-        String key = ctx.queryParam("key");
-        if (key != null && key.equals(getenv("MODERATION_KEY"))) {
-            ctx.sessionAttribute("auth", key);
-            ctx.redirect(ctx.path());
-            return false;
-        }
-        String auth = ctx.sessionAttribute("auth");
-        if (auth != null && auth.equals(getenv("MODERATION_KEY"))) {
-            return true;
-        }
-        ctx.status(401);
-        ctx.sessionAttribute("redirect_after_auth", ctx.path());
-        ctx.html(getAuth().render());
-        return false;
     }
 
     private static void auth(Context ctx) {
@@ -141,22 +186,16 @@ public class App {
         ctx.redirect(redirectPath);
     }
 
-    private static void redirectById(Context ctx) {
+    private void redirectById(Context ctx) {
         String id = ctx.pathParam("id");
         switch (id) {
-            case "success":
-                success(ctx);
-                return;
-            case "error":
-                error(ctx);
-                return;
             case "statistic":
-                if (isAuthenticated(ctx)) {
-                    ctx.html(getStatistic().render());
+                if (authenticate(ctx)) {
+                    ctx.html(getStatistic(ctx).render());
                 }
                 return;
             case "qr":
-                ctx.html(getQr().render());
+                ctx.html(getQr(ctx).render());
                 return;
         }
         AtomicReference<SaveVisit> visit = new AtomicReference<>();
@@ -189,48 +228,9 @@ public class App {
                             .responsibleEmail(params.get("email"))
                             .description(params.get("description"))
                             .build());
-                    success(ctx, "Успішно додано", "Посилання успішно додано: " + getenv("HOST") + "/" + params.get("name"));
+                    success(ctx, "Успішно додано", "Посилання успішно додано: " + getenv("HOST_URI") + "/" + params.get("name"));
                 }
         );
-    }
-
-    public static void success(Context ctx, String title, String message) {
-        success(ctx, title, message, null);
-    }
-
-    public static void success(Context ctx, String title, String message, String description) {
-        ctx.sessionAttribute("title", title);
-        ctx.sessionAttribute("message", message);
-        ctx.sessionAttribute("description", description);
-        ctx.redirect("/success");
-    }
-
-    private static void success(Context ctx) {
-        ctx.html(getSuccess(ctx).render());
-        ctx.sessionAttribute("title", null);
-        ctx.sessionAttribute("message", null);
-        ctx.sessionAttribute("description", null);
-    }
-
-    public static void error(Context ctx, String title, String error) {
-        error(ctx, null, title, error);
-    }
-
-    public static void error(Context ctx, HttpStatus status, String title, String error) {
-        ctx.status(Objects.requireNonNullElse(status, BAD_REQUEST));
-        ctx.sessionAttribute("title", title);
-        ctx.sessionAttribute("error", error);
-        ctx.redirect("/error");
-    }
-
-    private static void error(Context ctx) {
-        ctx.html(getError(ctx).render());
-        ctx.sessionAttribute("title", null);
-        ctx.sessionAttribute("error", null);
-    }
-
-    private static String decode(String value) {
-        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 
     private static String formatUrl(String link) {
@@ -238,20 +238,5 @@ public class App {
             return link;
         }
         return "https://" + link;
-    }
-
-    private static Map<String, String> parseParams(String body) {
-        body = decode(body);
-        Map<String, String> result = new HashMap<>();
-        Arrays.stream(body.split("&")).forEach(param -> {
-            String[] keyValue = param.split("=");
-            if (keyValue.length >= 2) {
-                if (keyValue.length > 2) {
-                    keyValue[1] = Arrays.stream(keyValue).skip(1).reduce((s1, s2) -> s1 + "=" + s2).orElse("");
-                }
-                result.put(keyValue[0].toLowerCase(), keyValue[1]);
-            }
-        });
-        return result;
     }
 }

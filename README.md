@@ -20,7 +20,7 @@ MODERATION_KEY=iug34hf2348nrfdo4mtuir3w4oti32
 
 Actual server domain or ip:
 ```dotenv
-HOST=https://link.kovaliv.dev
+HOST_URI=https://link.kovaliv.dev
 ```
 
 Maxmind account id and licence key for getting location of user by ip address (optional), 

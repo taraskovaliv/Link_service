@@ -1,0 +1,227 @@
+body {
+    font-family: FixelDisplay, serif;
+    background: #222222 !important;
+    color: white;
+}
+.header {
+    display: flex;
+    padding: 1rem 1rem .4rem 1rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+h1 {
+    margin: 0;
+}
+h2 {
+    text-decoration: gray dashed underline;
+}
+h3 {
+    margin-top: 0;
+    text-align: left;
+    padding-inline-start: 20px;
+    text-decoration: gray dashed underline;
+}
+a {
+    color: cornsilk;
+    text-decoration: none
+}
+a:hover {
+    color: lightgreen;
+}
+p {
+    text-align: justify;
+}
+input {
+    background: #222222;
+    color: white;
+    font-size: 1.5em;
+    background: none;
+    padding: 0.5em;
+    border: 2px dashed grey;
+    outline: none;
+    margin: 2px;
+}
+textarea {
+    background: none;
+    color: white;
+    margin: 20px;
+    padding: 10px;
+    outline: none;
+    border: 2px dashed grey;
+}
+@media (min-width: 560px) {
+    form textarea {
+        width: 500px;
+        height: 200px;
+    }
+}
+@media (max-width: 559px) {
+    form textarea {
+        width: 300px;
+        height: 300px;
+    }
+}
+hr {
+    border: none;
+    height: 2px;
+    background: grey;
+    background: repeating-linear-gradient(90deg, grey, grey 6px, transparent 6px, transparent 12px);
+    margin: 10px;
+}
+ul {
+    padding-inline-start: 0;
+    list-style-type: none;
+}
+.pointed {
+    padding-inline-start: 5px;
+    list-style-type: square;
+}
+.btn-link {
+    font-size: 1.5em;
+}
+.btn-link:hover {
+    color: lightgreen;
+}
+
+.btn {
+    color: white;
+    border: 2px dashed white;
+    font-size: 1.5em;
+    height: auto;
+    background: none;
+    padding: 0.5em;
+    display: inline-block;
+    margin: 2px;
+}
+.btn-primary {
+    border: 2px dashed cornsilk !important;
+}
+.btn-success {
+    border: 2px dashed green !important;
+}
+.btn-error {
+    border: 2px dashed red !important;
+}
+.btn-secondary {
+    border: 2px dashed gray !important;
+}
+.btn-primary:hover {
+    color: lightgreen !important;
+    background: darkslategrey !important;
+}
+
+.content {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2% .4rem;
+    display: flex;
+    width: 100%;
+    text-align: center;
+}
+
+.block {
+    flex: 1;
+    padding: 1em;
+    margin: 10px;
+    border: white 1px dashed;
+}
+
+.text-center {
+    text-align: center;
+}
+
+@media (max-width: 1300px) {
+    .content {
+        flex-direction: column;
+    }
+}
+@media (min-width: 1301px) {
+    .content {
+        flex-direction: row;
+    }
+}
+
+@media (min-width: 451px) {
+    .logo a {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: white;
+        padding-left: 1rem;
+    }
+
+    .logo {
+        padding-top: .8em;
+    }
+}
+@media (max-width: 450px) {
+    .logo a {
+        font-size: 2rem;
+        font-weight: bold;
+        color: white;
+        padding-left: .5em;
+    }
+    .logo {
+        padding-top: .5em;
+    }
+}
+
+.btn-heart {
+    background-color: #5b7742;
+    color: #fff;
+    align-items: center;
+    border: solid black 2px;
+    display: inline-flex;
+    flex-direction: row;
+    font-size: 16px;
+    font-family: Laqonic, sans-serif;
+    height: 40px;
+    font-weight: 400;
+    text-decoration: none;
+    width: auto;
+}
+.btn-heart > .text {
+    font-family: inherit;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    width: 100%;
+    padding: 8px 16px;
+}
+.btn-heart > .icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-right-width: 2px;
+    border-right-style: solid;
+    border-right-color: inherit;
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+}
+
+@media (max-width: 400px) {
+    .cba {
+        align-items: center;
+        flex-direction: column;
+    }
+    .cba-logo {
+        padding-bottom: 5px;
+    }
+}
+@media (min-width: 401px) {
+    .cba {
+        flex-direction: row;
+    }
+    .cba-logo {
+        padding-right: 20px;
+    }
+}
+.cba {
+    display: inline-flex;
+    padding: 8px;
+    border: dashed grey 1px;
+}
+.cba-logo img {
+    width: 97px;
+    height: 48px;
+}

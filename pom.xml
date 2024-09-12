@@ -4,7 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.kovaliv</groupId>
+    <parent>
+        <groupId>dev.kovaliv</groupId>
+        <artifactId>bom</artifactId>
+        <version>0.0.7</version>
+    </parent>
+
     <artifactId>link-service</artifactId>
     <version>0.0.1</version>
     <url>https://github.com/taraskovaliv/Link_service</url>
@@ -25,83 +30,18 @@
     </developers>
 
     <properties>
-        <java.version>21</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javalin.version>6.3.0</javalin.version>
-        <j2html.version>1.6.0</j2html.version>
-        <log4j.version>2.24.0</log4j.version>
-        <lombok.version>1.18.34</lombok.version>
-        <spring-context.version>6.1.12</spring-context.version>
-        <spring-data-jpa.version>3.3.3</spring-data-jpa.version>
-        <HikariCP.version>5.1.0</HikariCP.version>
-        <hibernate-core.version>7.0.0.Beta1</hibernate-core.version>
-        <postgresql.version>42.7.4</postgresql.version>
-        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
-        <slf4j-simple.version>2.0.16</slf4j-simple.version>
-        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <uap-java.version>1.6.1</uap-java.version>
         <chartjs-java-model.version>2.2.0</chartjs-java-model.version>
         <geoip2.version>4.2.0</geoip2.version>
         <qr-code-with-logo.version>0.3.0</qr-code-with-logo.version>
+        <web-base.version>0.1.0</web-base.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.j2html</groupId>
-            <artifactId>j2html</artifactId>
-            <version>${j2html.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.javalin</groupId>
-            <artifactId>javalin</artifactId>
-            <version>${javalin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j-simple.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring-context.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
-            <version>${spring-data-jpa.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>${HikariCP.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <version>${jakarta.persistence-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate-core.version}</version>
+            <groupId>dev.kovaliv</groupId>
+            <artifactId>web-base</artifactId>
+            <version>${web-base.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ua-parser</groupId>
@@ -124,6 +64,7 @@
             <version>${qr-code-with-logo.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -135,6 +76,7 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -159,6 +101,24 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>${maven-remote-resources-plugin.version}</version>
+                <configuration>
+                    <resourceBundles>
+                        <resourceBundle>dev.kovaliv:web-base:${web-base.version}</resourceBundle>
+                    </resourceBundles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

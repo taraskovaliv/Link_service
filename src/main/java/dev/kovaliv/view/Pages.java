@@ -2,6 +2,7 @@ package dev.kovaliv.view;
 
 import dev.kovaliv.data.dto.StatisticDto;
 import dev.kovaliv.data.entity.Visit;
+import io.javalin.http.Context;
 import j2html.tags.specialized.DivTag;
 import j2html.tags.specialized.HtmlTag;
 import org.springframework.data.util.Pair;
@@ -43,36 +44,36 @@ public class Pages {
 
     public static final Color BACKGROUND_COLOR = new Color(144, 238, 144);
 
-    public static HtmlTag getIndex() {
-        return getPage("Лінк сервіс kovaliv.dev", getHomeContent());
+    public static HtmlTag getIndex(Context ctx) {
+        return getPage("Лінк сервіс kovaliv.dev", getHomeContent(), ctx);
     }
 
-    public static HtmlTag getQr() {
-        return getPage("QR-код генератор", getQrContent());
+    public static HtmlTag getQr(Context ctx) {
+        return getPage("QR-код генератор", getQrContent(), ctx);
     }
 
-    public static HtmlTag getQr(String id) {
+    public static HtmlTag getQr(String id, Context ctx) {
         return getPage("QR-код", div(
                 img().withSrc("/img/" + id + ".png")
                         .withStyle("margin-top: 5%; margin-bottom: 5%")
                         .withAlt("QR-код")
-        ).withClass("text-center"));
+        ).withClass("text-center"), ctx);
     }
 
-    public static HtmlTag getAuth() {
-        return getPage("Авторизація", getAuthContent());
+    public static HtmlTag getAuth(Context ctx) {
+        return getPage("Авторизація", getAuthContent(), ctx);
     }
 
-    public static HtmlTag getStatistic() {
-        return getPage("Статиcтика", getStatisticEnter());
+    public static HtmlTag getStatistic(Context ctx) {
+        return getPage("Статиcтика", getStatisticEnter(), ctx);
     }
 
-    public static HtmlTag getStatisticByEmail(String email) {
-        return getPage("Статиcтика для " + email, getStatisticContentByEmail(email));
+    public static HtmlTag getStatisticByEmail(String email, Context ctx) {
+        return getPage("Статиcтика для " + email, getStatisticContentByEmail(email), ctx);
     }
 
-    public static HtmlTag getStatisticByEmailAndName(String email, String name) {
-        return getPage("Статиcтика для " + email, getStatisticContentByEmailAndName(email, name));
+    public static HtmlTag getStatisticByEmailAndName(String email, String name, Context ctx) {
+        return getPage("Статиcтика для " + email, getStatisticContentByEmailAndName(email, name), ctx);
     }
 
     private static DivTag getStatisticContentByEmailAndName(String email, String name) {
