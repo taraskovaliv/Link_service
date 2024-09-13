@@ -34,7 +34,7 @@
         <chartjs-java-model.version>2.2.0</chartjs-java-model.version>
         <geoip2.version>4.2.0</geoip2.version>
         <qr-code-with-logo.version>0.3.0</qr-code-with-logo.version>
-        <web-base.version>0.1.0</web-base.version>
+        <web-base.version>0.2.1</web-base.version>
     </properties>
 
     <dependencies>
