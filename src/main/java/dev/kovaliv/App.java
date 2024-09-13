@@ -38,7 +38,7 @@ import static java.lang.System.getenv;
 public class App extends AbstractApp {
 
     @Override
-    protected void addEndpoints(Javalin app) {
+    public void addEndpoints(Javalin app) {
         app
                 .get("/", this::home)
                 .post("/qr", App::qr)

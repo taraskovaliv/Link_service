@@ -7,7 +7,7 @@
     <parent>
         <groupId>dev.kovaliv</groupId>
         <artifactId>bom</artifactId>
-        <version>0.0.7</version>
+        <version>0.0.8</version>
     </parent>
 
     <artifactId>link-service</artifactId>
@@ -30,11 +30,7 @@
     </developers>
 
     <properties>
-        <uap-java.version>1.6.1</uap-java.version>
-        <chartjs-java-model.version>2.2.0</chartjs-java-model.version>
-        <geoip2.version>4.2.0</geoip2.version>
-        <qr-code-with-logo.version>0.3.0</qr-code-with-logo.version>
-        <web-base.version>0.1.0</web-base.version>
+        <web-base.version>0.2.1</web-base.version>
     </properties>
 
     <dependencies>
@@ -51,7 +47,7 @@
         <dependency>
             <groupId>software.xdev</groupId>
             <artifactId>chartjs-java-model</artifactId>
-            <version>${chartjs-java-model.version}</version>
+            <version>${chartjs.version}</version>
         </dependency>
         <dependency>
             <groupId>com.maxmind.geoip2</groupId>
