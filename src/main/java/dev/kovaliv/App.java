@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static dev.kovaliv.config.ExecutorConfig.getExecutor;
 import static dev.kovaliv.data.Repos.linkRepo;
+import static dev.kovaliv.utils.ExecutorUtils.executor;
 import static dev.kovaliv.view.Pages.*;
 import static io.javalin.http.HttpStatus.NOT_FOUND;
 import static j2html.TagCreator.link;
@@ -69,7 +69,7 @@ public class App extends AbstractApp {
             @Override
             public Logo getLogo(String s) {
                 //TODO add logo.svg
-                return new Logo("/img/logo.svg", "LinkService", "376", "74");
+                return new Logo("/img/logo.svg", "LinkService");
             }
         };
     }
@@ -211,7 +211,7 @@ public class App extends AbstractApp {
                 () -> error(ctx, NOT_FOUND, "Помилка", "Посилання не знайдено")
         );
         if (visit.get() != null) {
-            getExecutor().execute(visit.get());
+            executor().execute(visit.get());
         }
     }
 
