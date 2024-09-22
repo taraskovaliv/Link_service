@@ -22,7 +22,7 @@ public class SitemapService extends AbstractSitemapService {
         linkRepo().findAll().forEach(
                 link -> urls.put(hostUri + "/" + link.getName(), new SMValue(0.7, NEVER))
         );
-        return Map.of();
+        return urls;
     }
 
     @Override
