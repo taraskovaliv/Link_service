@@ -7,7 +7,7 @@
     <parent>
         <groupId>dev.kovaliv</groupId>
         <artifactId>bom</artifactId>
-        <version>0.0.11</version>
+        <version>0.0.12</version>
     </parent>
 
     <artifactId>link-service</artifactId>
@@ -30,7 +30,7 @@
     </developers>
 
     <properties>
-        <web-base.version>0.4.6</web-base.version>
+        <web-base.version>0.4.8</web-base.version>
     </properties>
 
     <dependencies>
