@@ -11,6 +11,7 @@ import io.github.simonscholz.qrcode.QrCodeFactory;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
+import io.sentry.Sentry;
 import j2html.tags.DomContent;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -146,6 +147,7 @@ public class App extends AbstractApp {
             log.trace("File created: {}", newFilePath.toAbsolutePath());
             return newFilePath.toFile();
         } catch (Exception e) {
+            Sentry.captureException(e);
             throw new RuntimeException("Failed to create file", e);
         }
     }
