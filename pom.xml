@@ -30,7 +30,7 @@
     </developers>
 
     <properties>
-        <web-base.version>0.7.1</web-base.version>
+        <web-base.version>0.7.2</web-base.version>
     </properties>
 
     <dependencies>
