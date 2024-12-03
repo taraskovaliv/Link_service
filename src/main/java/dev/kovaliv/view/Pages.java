@@ -77,9 +77,7 @@ public class Pages {
     }
 
     private static DivTag getStatisticContentByEmailAndName(String email, String name) {
-        List<Visit> visits = visitRepo().findByLinkName(name).stream()
-                .filter(v -> !v.isBot())
-                .toList();
+        List<Visit> visits = visitRepo().findByLinkNameAndNotBot(name);
         if (visits.isEmpty()) {
             return div(
                     h1("Статистика для " + email + " по " + name),

@@ -23,7 +23,7 @@ public class DailyNotification {
     @SchedulerLock(name = "link-daily-visits", lockAtMostFor = "PT60S")
     public void sendDailyNotification() {
         LocalDateTime yesterday = LocalDate.now().atStartOfDay().minusDays(1);
-        List<Visit> visits = visitRepo().findAllByCreatedDateBetween(yesterday, LocalDate.now().atStartOfDay());
+        List<Visit> visits = visitRepo().findAllByCreatedDateBetweenAndNotBot(yesterday, LocalDate.now().atStartOfDay());
         if (!visits.isEmpty()) {
             Map<String, Integer> visitsByName = visits.stream()
                     .collect(groupingBy(v -> v.getLink().getName(), summingInt(v -> 1)));
